@@ -44,6 +44,4 @@ redis>=2.10.5
 celery==4.0.2
 
 
-
-
-# Your custom requirements go here
+feedparser==5.2.1

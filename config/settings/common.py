@@ -12,6 +12,10 @@ from __future__ import absolute_import, unicode_literals
 
 import environ
 
+from kombu.serialization import register
+from instanotifier.taskapp.serializers import dumps, loads
+
+
 ROOT_DIR = environ.Path(__file__) - 3  # (instanotifier/config/settings/common.py - 3 = instanotifier/)
 APPS_DIR = ROOT_DIR.path('instanotifier')
 
@@ -60,7 +64,7 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     # custom users app
     'instanotifier.users.apps.UsersConfig',
-    # Your stuff: custom apps go here
+    'instanotifier.fetcher'
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -267,6 +271,16 @@ if CELERY_BROKER_URL == 'django://':
     CELERY_RESULT_BACKEND = 'redis://'
 else:
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+# Register custom serializer methods with kombu to be able to serialize time entries
+register('timeawarejsonserializer', dumps, loads,
+    content_type='application/json',
+    content_encoding='utf-8')
+
+CELERY_ACCEPT_CONTENT = ['json', 'timeawarejsonserializer']
+CELERY_RESULT_SERIALIZER = 'timeawarejsonserializer'
+CELERY_TASK_SERIALIZER = 'json'
+
 ########## END CELERY
 
 

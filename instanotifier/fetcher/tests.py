@@ -8,8 +8,9 @@ def rss_file_path():
     return file_path
 
 
-def test_fetch_url():
-    test_file_path = rss_file_path()
+def test_fetch_url(test_file_path=None):
+    if not test_file_path:
+        test_file_path = rss_file_path()
 
     assert len(test_file_path) > 0
 

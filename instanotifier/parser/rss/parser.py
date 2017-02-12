@@ -27,11 +27,14 @@ RSS_FEED_ENTRY_FIELDS = [
 class RssParser(object):
     """ Parses RSS feed fetched by the RssFetcher. """
 
+    feed_info_key = 'feed'
+    feed_entries_key = 'entries'
+
     def __init__(self, feed):
         self.feed = feed
 
     def parse_feed_info(self, feed):
-        feed = feed.get('feed', None)
+        feed = feed.get(self.feed_info_key, None)
         if not feed:
             raise ValueError("Empty info feed specified")
 
@@ -40,7 +43,7 @@ class RssParser(object):
         return feed_info
 
     def parse_feed_items(self, feed):
-        feed_entries = feed.get('entries', None)
+        feed_entries = feed.get(self.feed_entries_key, None)
         if not feed_entries:
             raise ValueError("Feed with no entries specified")
 
@@ -68,5 +71,6 @@ class RssParser(object):
             feed_info = self.parse_feed_info(self.feed)
             feed_items = self.parse_feed_items(self.feed)
 
+
+
             # TODO: update SourceModel based on feed_info
-            pass

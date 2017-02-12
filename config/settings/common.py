@@ -64,7 +64,9 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     # custom users app
     'instanotifier.users.apps.UsersConfig',
-    'instanotifier.fetcher'
+    'instanotifier.fetcher',
+    'instanotifier.parser',
+    'instanotifier.notification',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

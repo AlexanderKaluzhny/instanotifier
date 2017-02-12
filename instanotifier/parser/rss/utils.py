@@ -10,3 +10,25 @@ def filter_feed_by_fields (feed, fields):
 
     filtered_feed = {field: feed[field] for field in fields if field in feed_keys}
     return filtered_feed
+
+
+def get_test_rssfeed(feed_path):
+    from instanotifier.fetcher.tests import test_fetch_url
+    from instanotifier.parser.rss.parser import RssParser
+
+    feed = test_fetch_url(feed_path)
+    parser = RssParser(feed)
+
+    return feed, parser
+
+def get_test_feed_info_fields(feed_path=None):
+    feed, parser = get_test_rssfeed(feed_path)
+
+    keys = feed[parser.feed_info_key].keys()
+    return keys
+
+def get_test_feed_entries_fields(feed_path=None):
+    feed, parser = get_test_rssfeed(feed_path)
+
+    keys = feed[parser.feed_entries_key][0].keys()
+    return keys

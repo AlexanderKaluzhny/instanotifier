@@ -5,19 +5,25 @@ from instanotifier.notification.models import RssNotification
 
 
 class RssNotificationForm(forms.ModelForm):
-    """ The form for validation and creation of the RssNotification instances. """
+    # internal_id = forms.CharField(max_length=255)
+
     class Meta:
         model = RssNotification
-        fields = ['id', 'title', 'summary', 'link', 'published_parsed'] # , 'internal_id'
+        fields = ['entry_id', 'title', 'summary', 'link', 'published_parsed']  # , 'internal_id'
 
     def __init__(self, *args, **kwargs):
         super(RssNotificationForm, self).__init__(*args, **kwargs)
+        if self.data and self.data.get('id', None):
+            self.data.update(entry_id=self.data['id'])
 
-    def _post_clean(self):
-        super(RssNotificationForm, self)._post_clean()
-        cleaned_data = self.cleaned_data
+    # def _post_clean(self):
+    #     super(RssNotificationForm, self)._post_clean()
+    #     cleaned_data = self.cleaned_data
 
-        id = cleaned_data.get('id')
-        self.internal_id = self.instance.compute_internal_id(id)
-        # what is the value of instance.internal_id now ?
+    def get_instance_internal_id(self):
+        internal_id = None
+        id = self.cleaned_data.get('entry_id', None)
+        if id:
+            internal_id = self.instance.compute_internal_id(id)
 
+        return internal_id

@@ -15,8 +15,7 @@ class TestRssNotificationForm(TestCase):
     def test_create_notification(self):
         json_feed_item = self.feed_items[0]
 
-        import pudb; pudb.set_trace()
         form = RssNotificationForm(data=json_feed_item)
+        import pudb; pudb.set_trace()
         self.assertTrue(form.is_valid())
-
 

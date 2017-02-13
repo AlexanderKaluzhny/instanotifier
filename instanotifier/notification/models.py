@@ -22,7 +22,7 @@ class RssNotification(models.Model):
     summary = models.TextField(_("Summary"), blank=True)
     link = models.URLField(_("Link"), blank=False)
     published_parsed = models.DateTimeField(_("Published"))
-    id = models.CharField(_("Rss entry id"), max_length=2083, blank=False)
+    entry_id = models.CharField(_("Rss entry id"), max_length=2083, blank=False)
 
     def compute_internal_id(self, id):
         if not id:
@@ -32,7 +32,6 @@ class RssNotification(models.Model):
         return hash
 
     def save(self, *args, **kwargs):
-        # TODO: check self.id.encode
-        self.internal_id = self.compute_internal_id(self.id)
+        self.internal_id = self.compute_internal_id(self.entry_id)
 
         super(RssNotification, self).save(*args, **kwargs)

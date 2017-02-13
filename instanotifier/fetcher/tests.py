@@ -2,7 +2,6 @@ from django.conf import settings
 
 from instanotifier.fetcher.tasks import fetch
 
-
 def rss_file_path():
     file_path = str(settings.ROOT_DIR.path('data/samplerss.xml'))
     return file_path

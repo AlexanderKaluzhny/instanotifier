@@ -1,6 +1,9 @@
 from django.conf import settings
 
+from celery import chain
+
 from instanotifier.fetcher.tasks import fetch
+from instanotifier.parser.tasks import parse
 
 def rss_file_path():
     file_path = str(settings.ROOT_DIR.path('data/samplerss.xml'))
@@ -18,3 +21,4 @@ def test_fetch_url(test_file_path=None):
 
     assert len(result) > 0
     return result
+

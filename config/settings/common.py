@@ -281,7 +281,7 @@ register('timeawarejsonserializer', dumps, loads,
 
 CELERY_ACCEPT_CONTENT = ['json', 'timeawarejsonserializer']
 CELERY_RESULT_SERIALIZER = 'timeawarejsonserializer'
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'timeawarejsonserializer'
 
 ########## END CELERY
 

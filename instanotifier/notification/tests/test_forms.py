@@ -16,6 +16,8 @@ class TestRssNotificationForm(TestCase):
         json_feed_item = self.feed_items[0]
 
         form = RssNotificationForm(data=json_feed_item)
-        import pudb; pudb.set_trace()
         self.assertTrue(form.is_valid())
+        # NOTE: if run in task_eager mode, the self.feed was not serialized by the timeawareserializer,
+        # so the RssNotification form will not be valid.
+
 

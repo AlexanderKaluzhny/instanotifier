@@ -24,14 +24,28 @@ class RssNotification(models.Model):
     published_parsed = models.DateTimeField(_("Published"))
     entry_id = models.CharField(_("Rss entry id"), max_length=2083, blank=False)
 
-    def compute_internal_id(self, id):
+    def evaluate_internal_id(self):
+        if self.internal_id:
+            return self.internal_id
+
+        id = self.entry_id
         if not id:
             raise ValueError("Id is not specified.")
 
-        hash = hashlib.md5(id.encode('utf-8')).hexdigest()
-        return hash
+        self.internal_id = hashlib.md5(id.encode('utf-8')).hexdigest()
+        return self.internal_id
 
     def save(self, *args, **kwargs):
-        self.internal_id = self.compute_internal_id(self.entry_id)
+        self.evaluate_internal_id()
 
         super(RssNotification, self).save(*args, **kwargs)
+
+    def check_existing(self):
+        self.evaluate_internal_id()
+
+        qs = RssNotification.objects.filter(internal_id=self.internal_id)
+        if qs.exists():
+            return True
+
+        return False
+

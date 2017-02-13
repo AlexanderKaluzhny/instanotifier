@@ -71,6 +71,5 @@ class RssParser(object):
             feed_info = self.parse_feed_info(self.feed)
             feed_items = self.parse_feed_items(self.feed)
 
-
-
             # TODO: update SourceModel based on feed_info
+            return feed_info, feed_items

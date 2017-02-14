@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load humanize %}
+
+{% comment %}
+RSS_FEED_ENTRY_FIELDS = [
+    u'title',
+    u'summary',
+    u'link',
+    u'published_parsed',
+    u'id'  # hash or leave as is
+]
+{% endcomment %}
+
+<h2><a href="{{ notification.link }}">{{ notification.title }}</a></h2>
+
+<p>{{ notification.published_parsed|naturalday}}</p>
+<p>{{ notification.summary }}</p>
+
+

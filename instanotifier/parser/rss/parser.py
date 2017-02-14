@@ -17,7 +17,6 @@ Necessary feed info fields: feed_object['entries'][ii].keys()
 RSS_FEED_ENTRY_FIELDS = [
     u'title',
     u'summary',
-    u'guidislink',
     u'link',
     u'published_parsed',
     u'id'  # hash or leave as is
@@ -52,6 +51,10 @@ class RssParser(object):
             item = utils.filter_feed_by_fields(entry, RSS_FEED_ENTRY_FIELDS)
             feed_items.append(item)
 
+        if len(feed_items):
+            # FIXME: TODO: handle serialization of items in the Parser
+            assert (type(feed_items[0]['published_parsed']) is unicode)
+
         return feed_items
 
     def parse(self):
@@ -71,5 +74,4 @@ class RssParser(object):
             feed_info = self.parse_feed_info(self.feed)
             feed_items = self.parse_feed_items(self.feed)
 
-            # TODO: update SourceModel based on feed_info
             return feed_info, feed_items

@@ -48,7 +48,7 @@ DJANGO_APPS = (
     'django.contrib.staticfiles',
 
     # Useful template tags:
-    # 'django.contrib.humanize',
+    'django.contrib.humanize',
 
     # Admin
     'django.contrib.admin',
@@ -64,9 +64,11 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     # custom users app
     'instanotifier.users.apps.UsersConfig',
+
     'instanotifier.fetcher',
     'instanotifier.parser',
     'instanotifier.notification',
+    'instanotifier.publisher',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

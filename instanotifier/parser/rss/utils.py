@@ -12,11 +12,11 @@ def filter_feed_by_fields (feed, fields):
     return filtered_feed
 
 
-def get_test_rssfeed(feed_path):
-    from instanotifier.fetcher.tests import test_fetch_url
+def get_test_rssfeed(feed_path=None):
+    from instanotifier.fetcher.tests import test_fetch_url_task
     from instanotifier.parser.rss.parser import RssParser
 
-    feed = test_fetch_url(feed_path)
+    feed = test_fetch_url_task(feed_path)
     parser = RssParser(feed)
 
     return feed, parser

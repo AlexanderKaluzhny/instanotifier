@@ -8,7 +8,7 @@ from instanotifier.notification.forms import RssNotificationForm
 
 class TestRssNotificationForm(TestCase):
     def setUp(self):
-        self.feed = tests.test_fetch_url()
+        self.feed = tests.test_fetch_url_task()
         parser = RssParser(self.feed)
         self.feed_items = parser.parse_feed_items(self.feed)
 

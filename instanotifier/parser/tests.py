@@ -12,7 +12,7 @@ from instanotifier.notification.models import RssNotification
 
 class TestRssParser(TestCase):
     def setUp(self):
-        self.feed = tests.test_fetch_url()
+        self.feed = tests.test_fetch_url_task()
 
     def test_parse_feed_info(self):
         parser = RssParser(self.feed)
@@ -44,7 +44,7 @@ class TestRssParser(TestCase):
 
 class TestParserTask(TestCase):
     def setUp(self):
-        self.feed = tests.test_fetch_url()
+        self.feed = tests.test_fetch_url_task()
         # NOTE: if run in task_eager mode, the self.feed is not serialized by the timeawareserializer,
         # so the RssNotification form will not be valid.
 
@@ -76,8 +76,12 @@ def test_consume_feed():
 
     task_flow = chain(fetch.s(rss_file_path()), parse.s())
     saved_pks = task_flow.delay().get()
-    print 'Number of saved notifications: %s' % (len(saved_pks))
-    assert (len(saved_pks) == 0)
 
     actual_notification_count = RssNotification.objects.count()
     print 'Actual notifications count: %s' % (actual_notification_count)
+
+    print 'Number of saved notifications: %s' % (len(saved_pks))
+    assert (len(saved_pks) == actual_notification_count - original_notification_count)
+
+
+

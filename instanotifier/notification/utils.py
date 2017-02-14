@@ -1,4 +1,4 @@
-from instanotifier.fetcher.tests import test_fetch_url
+from instanotifier.fetcher.tests import test_fetch_url_task
 
 
 def get_item_field(feed_items, item_idx, field_name):
@@ -16,10 +16,10 @@ def get_item_field(feed_items, item_idx, field_name):
     return value
 
 def get_test_feed_item_field(item_idx, field_name, feed_path=None):
-    from instanotifier.fetcher.tests import test_fetch_url
+    from instanotifier.fetcher.tests import test_fetch_url_task
     from instanotifier.parser.rss.parser import RssParser
 
-    feed = test_fetch_url(feed_path)
+    feed = test_fetch_url_task(feed_path)
 
     parser = RssParser(feed)
     feed_items = parser.parse_feed_items(feed)

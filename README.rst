@@ -1,7 +1,7 @@
 InstaNotifier
 =============
 
-Chekinsending the notifications
+Checking for new feed entries periodically, accumulates new entries and sends the notifications
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/

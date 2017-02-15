@@ -6,30 +6,17 @@ from django.core import mail
 from django.test.utils import override_settings
 
 from instanotifier.notification.models import RssNotification
-from instanotifier.publisher.email.publisher import RssNotificationEmailPublisher
+from instanotifier.notification.tests.utils import create_rssnotifications_from_test_feed
 
+from instanotifier.publisher.email.publisher import RssNotificationEmailPublisher
 from instanotifier.publisher.tasks import publish
 
 
-class TestPublisherRssNotificationsMixin(object):
-    def _create_rssnotifications_from_test_feed(self):
-        """ parse test feed and save notifications """
-
-        from instanotifier.parser.rss.utils import get_test_rssfeed
-        from instanotifier.notification.views import create_rssnotification_instances
-
-        feed, parser = get_test_rssfeed()
-        feed_items = parser.parse_feed_items(feed)
-
-        saved_pks = create_rssnotification_instances(feed_items)
-        return saved_pks
-
-
-class TestRssNotificationEmailPublisher(TestPublisherRssNotificationsMixin, TestCase):
+class TestRssNotificationEmailPublisher(TestCase):
     def setUp(self):
         mail.outbox = []  # reset outbox
 
-        self.saved_pks = self._create_rssnotifications_from_test_feed()
+        self.saved_pks = create_rssnotifications_from_test_feed()
 
     def test_render_notification(self):
         pk = self.saved_pks[0]
@@ -73,24 +60,30 @@ class TestRssNotificationEmailPublisher(TestPublisherRssNotificationsMixin, Test
         self.assertEqual(len(mail.outbox), len(self.saved_pks))
 
 
-class TestPublishTask(TestPublisherRssNotificationsMixin, TestCase):
+class TestPublishTask(TestCase):
     def setUp(self):
-        self.saved_pks = self._create_rssnotifications_from_test_feed()
+        self.saved_pks = create_rssnotifications_from_test_feed()
         assert(len(self.saved_pks) > 0)
 
     @mock.patch('instanotifier.publisher.tasks.RssNotificationEmailPublisher.publish')
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_publish_task(self, publish_method_mock):
         publish.delay(self.saved_pks).get()
-        import pudb; pudb.set_trace()
         publish_method_mock.assert_called()
 
 
 def test_consume_feed_task_chaining():
+    """ Consume test rss feed through connected fetcher and parser and publisher tasks.
+        Make sure the parser have created the RssNotification instances, and
+        all the messages were sent.
+
+        It should be run from under the shell/script.
+    """
+
     from celery import chain
     from instanotifier.fetcher.tasks import fetch
     from instanotifier.parser.tasks import parse
-    from instanotifier.fetcher.tests import rss_file_path
+    from instanotifier.fetcher.rss.utils import _rss_file_path
     from instanotifier.notification.utils.feed import delete_test_rss_feed_notifications
 
     delete_test_rss_feed_notifications()
@@ -98,7 +91,7 @@ def test_consume_feed_task_chaining():
     original_notification_count = RssNotification.objects.count()
     print 'Original notifications count: %s' % (original_notification_count)
 
-    task_flow = chain(fetch.s(rss_file_path()), parse.s(), publish.s())
+    task_flow = chain(fetch.s(_rss_file_path()), parse.s(), publish.s())
     task_flow.delay().get()
 
     actual_notification_count = RssNotification.objects.count()

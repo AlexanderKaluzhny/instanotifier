@@ -5,6 +5,8 @@ import hashlib
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from instanotifier.notification.utils import html
+
 """
 RSS_FEED_ENTRY_FIELDS = [
     u'title',
@@ -37,6 +39,8 @@ class RssNotification(models.Model):
 
     def save(self, *args, **kwargs):
         self.evaluate_internal_id()
+
+        self.summary = html.clean_html(self.summary)
 
         super(RssNotification, self).save(*args, **kwargs)
 

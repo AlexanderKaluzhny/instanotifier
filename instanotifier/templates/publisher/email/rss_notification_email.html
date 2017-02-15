@@ -13,7 +13,7 @@ RSS_FEED_ENTRY_FIELDS = [
 
 <h2><a href="{{ notification.link }}">{{ notification.title }}</a></h2>
 
-<p>{{ notification.published_parsed|naturalday}}</p>
-<p>{{ notification.summary }}</p>
+<p>{{ notification.published_parsed }}</p>
+<p>{{ notification.summary|safe }}</p>
 
 

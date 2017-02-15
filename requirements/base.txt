@@ -45,3 +45,5 @@ celery==4.0.2
 
 
 feedparser==5.2.1
+
+html5lib==0.999999999

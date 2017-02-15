@@ -24,7 +24,7 @@ class RssNotificationEmailPublisher(object):
                           u'{}'.format(''),
                           fail_silently=False, html_message=rendered_notification)
         except Exception as e:
-            pass
+            raise e
 
     def render_notification(self, notification):
         rendered_content = render_to_string(self.email_template, {'notification' : notification})

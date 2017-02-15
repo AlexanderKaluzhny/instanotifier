@@ -68,13 +68,12 @@ class TestParserTask(TestCase):
 def test_consume_feed():
     from celery import chain
     from instanotifier.fetcher.tasks import fetch
-    from instanotifier.parser.tasks import parse
     from instanotifier.fetcher.tests import rss_file_path
 
     original_notification_count = RssNotification.objects.count()
     print 'Original notifications count: %s' % (original_notification_count)
 
-    task_flow = chain(fetch.s(rss_file_path()), parse.s())
+    task_flow = chain(fetch.s(rss_file_path()), tasks.parse.s())
     saved_pks = task_flow.delay().get()
 
     actual_notification_count = RssNotification.objects.count()

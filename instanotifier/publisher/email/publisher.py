@@ -4,8 +4,8 @@ from django.core.mail import mail_managers
 
 from instanotifier.notification.models import RssNotification
 
-class RssNotificationEmailPublisher(object):
 
+class RssNotificationEmailPublisher(object):
     test_email_address = 'sample@example.com'
     email_template = 'publisher/email/rss_notification_email.html'
 
@@ -14,7 +14,7 @@ class RssNotificationEmailPublisher(object):
 
     def send_email(self, rendered_notification, notification):
         from django.utils.safestring import SafeText
-        assert(isinstance(rendered_notification, SafeText))
+        assert (isinstance(rendered_notification, SafeText))
 
         try:
             # TODO: send_mass_mail to send to multiple recipients
@@ -27,7 +27,7 @@ class RssNotificationEmailPublisher(object):
             raise e
 
     def render_notification(self, notification):
-        rendered_content = render_to_string(self.email_template, {'notification' : notification})
+        rendered_content = render_to_string(self.email_template, {'notification': notification})
         return rendered_content
 
     def publish(self):
@@ -37,4 +37,3 @@ class RssNotificationEmailPublisher(object):
         for notification in queryset:
             rendered_content = self.render_notification(notification)
             self.send_email(rendered_content, notification)
-            # TODO: write tests for this method

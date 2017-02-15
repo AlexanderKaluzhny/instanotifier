@@ -36,7 +36,7 @@ class TestRssNotificationEmailPublisher(TestCase):
         publisher = RssNotificationEmailPublisher(self.saved_pks)
 
         notification = RssNotification.objects.get(pk=pk)
-        rendered_content = publisher.render_notification(notification)
         import pudb; pudb.set_trace()
+        rendered_content = publisher.render_notification(notification)
         publisher.send_email(rendered_content, notification)
         self.assertEqual(len(mail.outbox), 1)

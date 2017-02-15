@@ -18,6 +18,7 @@ class RssNotificationEmailPublisher(object):
 
         try:
             # TODO: send_mass_mail to send to multiple recipients
+
             # TODO: send_mail
             mail_managers(u'{}'.format(notification.title),
                           u'{}'.format(''),
@@ -36,3 +37,4 @@ class RssNotificationEmailPublisher(object):
         for notification in queryset:
             rendered_content = self.render_notification(notification)
             self.send_email(rendered_content, notification)
+            # TODO: write tests for this method

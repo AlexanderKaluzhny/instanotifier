@@ -27,6 +27,10 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='arv1q1^yf5%24rlqt3hoc5n82v+lr&1o6
 
 # Mail settings
 # ------------------------------------------------------------------------------
+DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL',
+                         default='InstaNotifier <noreply@example.com>')
+EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[InstaNotifier] ')
+SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
 
 EMAIL_PORT = 1025
 

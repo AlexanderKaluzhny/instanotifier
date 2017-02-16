@@ -1,6 +1,6 @@
 from django.template.loader import render_to_string
-
-from django.core.mail import mail_managers
+from django.core.mail import mail_managers, send_mail
+from django.conf import settings
 
 from instanotifier.notification.models import RssNotification
 
@@ -19,10 +19,16 @@ class RssNotificationEmailPublisher(object):
         try:
             # TODO: send_mass_mail to send to multiple recipients
 
-            # TODO: send_mail
-            mail_managers(u'{}'.format(notification.title),
-                          u'{}'.format(''),
-                          fail_silently=False, html_message=rendered_notification)
+            # mail_managers(u'{}'.format(notification.title),
+            #               u'{}'.format(''),
+            #               fail_silently=False, html_message=rendered_notification)
+            send_mail('%s%s' % (settings.EMAIL_SUBJECT_PREFIX, notification.title),
+                      u'{}'.format(''),
+                      from_email=settings.SERVER_EMAIL,
+                      recipient_list=[self.test_email_address, ],
+                      fail_silently=False,
+                      html_message=rendered_notification)
+            
         except Exception as e:
             raise e
 

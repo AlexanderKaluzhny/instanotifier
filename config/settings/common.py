@@ -58,6 +58,9 @@ THIRD_PARTY_APPS = (
     'allauth',  # registration
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
+
+    'django_celery_beat',
+
 )
 
 # Apps specific for this project go here.
@@ -69,6 +72,7 @@ LOCAL_APPS = (
     'instanotifier.parser',
     'instanotifier.notification',
     'instanotifier.publisher',
+    'instanotifier.feedsource',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from instanotifier.notification.models import RssNotification
+
+@admin.register(RssNotification)
+class RssNotificaionAdmin(admin.ModelAdmin):
+    pass

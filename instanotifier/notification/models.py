@@ -4,6 +4,7 @@ import hashlib
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_text, python_2_unicode_compatible
 
 from instanotifier.notification.utils import html
 
@@ -17,6 +18,7 @@ RSS_FEED_ENTRY_FIELDS = [
 ]
 """
 
+@python_2_unicode_compatible
 class RssNotification(models.Model):
     internal_id = models.CharField(_("Internal entry id"), max_length=255, db_index=True, blank=False, editable=False)
 
@@ -57,3 +59,8 @@ class RssNotification(models.Model):
 
         return False
 
+    def __str__(self):
+        return '%s %s' % (self.title, self.published_parsed)
+
+    class Meta:
+        ordering = ['-published_parsed']

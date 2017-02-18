@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Feed Source editing form{% endblock %}
+
+{% block content %}
+  <h1>New Feed Source</h1>
+  </br>
+  <form class="form-horizontal" method="post" action="{% url 'feedsource:create' %}">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <div class="control-group">
+      <div class="controls">
+        <button type="submit" class="btn btn-success">Create</button>
+      </div>
+    </div>
+  </form>
+{% endblock %}

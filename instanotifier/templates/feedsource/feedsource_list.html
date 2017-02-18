@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% block title %}Feed Sources{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Feed Sources</h2>
+
+  <div class="list-group">
+    {% for feedsource in object_list %}
+      <a href="{% url 'feedsource:update' feedsource.pk %}" class="list-group-item">
+        <h4 class="list-group-item-heading">{{ feedsource }}</h4>
+      </a>
+    {% endfor %}
+  </div>
+  </br>
+  <a href="{% url 'feedsource:create' %}">
+    <button id="add-feedsource-button" class="btn btn-success">Add</button>
+  </a>
+</div>
+{% endblock content %}

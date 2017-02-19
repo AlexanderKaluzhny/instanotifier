@@ -43,7 +43,9 @@ redis>=2.10.5
 
 celery==4.0.2
 
-
 feedparser==5.2.1
 
 html5lib==0.999999999
+
+patch==1.16
+

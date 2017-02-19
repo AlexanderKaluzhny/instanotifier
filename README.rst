@@ -112,3 +112,13 @@ See detailed `cookiecutter-django Docker documentation`_.
 .. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 
 
+
+Patching Celery Beat
+^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+    cd instanotifier/utility
+    ./apply_celery_patch.sh
+
+It will copy the requirements/celery_beat_tick.patch and apply it.

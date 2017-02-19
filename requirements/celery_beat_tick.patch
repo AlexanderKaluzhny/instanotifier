@@ -1,0 +1,43 @@
+Index: ../../venv/lib/python2.7/site-packages/celery/beat.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- ../../venv/lib/python2.7/site-packages/celery/beat.py	(revision )
++++ ../../venv/lib/python2.7/site-packages/celery/beat.py	(revision )
+@@ -191,6 +191,7 @@
+     def __init__(self, app, schedule=None, max_interval=None,
+                  Producer=None, lazy=False, sync_every_tasks=None, **kwargs):
+         self.app = app
++        self.old_schedulers = None
+         self.data = maybe_evaluate({} if schedule is None else schedule)
+         self.max_interval = (max_interval or
+                              app.conf.beat_max_loop_interval or
+@@ -232,6 +233,17 @@
+     def is_due(self, entry):
+         return entry.is_due()
+ 
++    def schedules_equal(self, a, b):
++        if a.keys() != b.keys():
++            return False
++        for name, model in a.items():
++            b_model = b.get(name)
++            if not b_model:
++                return False
++            if hasattr(model.schedule, '__repr__') and model.schedule.__repr__() != b_model.schedule.__repr__():
++                return False
++        return True
++
+     # pylint disable=redefined-outer-name
+     def tick(self, event_t=event_t, min=min,
+              heappop=heapq.heappop, heappush=heapq.heappush,
+@@ -250,7 +262,8 @@
+         adjust = self.adjust
+         max_interval = self.max_interval
+         H = self._heap
+-        if H is None:
++        if H is None or not self.schedules_equal(self.old_schedulers, self.schedule):
++            self.old_schedulers = self.schedule
+             H = self._heap = [event_t(_when(e, e.is_due()[1]) or 0, 5, e)
+                               for e in values(self.schedule)]
+             heapify(H)

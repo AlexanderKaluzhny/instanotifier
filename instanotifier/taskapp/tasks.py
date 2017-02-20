@@ -1,6 +1,9 @@
 from __future__ import absolute_import
 
 from celery import chain, shared_task
+
+from django.shortcuts import get_object_or_404
+
 from instanotifier.fetcher.tasks import fetch
 from instanotifier.parser.tasks import parse
 from instanotifier.publisher.tasks import publish
@@ -24,8 +27,12 @@ def test_consume_feed_task_chaining():
 def _get_chain():
     return chain(fetch.s(), parse.s(), publish.s())
 
+
 @shared_task
-def RSS_NOTIFICATION_CHAINING_TASK(id):
-    url = ''
+def RSS_NOTIFICATION_CHAINING_TASK(feedsource_pk):
+
+    from instanotifier.feedsource.models import FeedSource
+
+    url = FeedSource.objects.values_list('url', flat=True).get(pk=feedsource_pk)
     task_flow = _get_chain()
     task_flow.delay(url)

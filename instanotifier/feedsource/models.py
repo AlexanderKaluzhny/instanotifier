@@ -13,7 +13,7 @@ from instanotifier.taskapp.tasks import RSS_NOTIFICATION_CHAINING_TASK
 class FeedSource(models.Model):
     url = models.URLField(blank=False)
     email_to = models.CharField(max_length=255, blank=False)
-    # TODO: the interval are presaved for now
+    # TODO: the intervals are presaved for now
     interval = models.ForeignKey(IntervalSchedule)
     enabled = models.BooleanField(default=True, blank=False)
 
@@ -33,12 +33,12 @@ class FeedSource(models.Model):
             return self._periodic_task_validated
 
         new_periodic_task_data = dict(
-            regtask=RSS_NOTIFICATION_CHAINING_TASK,
+            regtask=RSS_NOTIFICATION_CHAINING_TASK.name,
             name=self.task_name(),  # unique, max_length=200
             interval=self.interval.pk,  # IntervalSchedule, blank=True
             args=str(list()),  # self.pk,
             kwargs=str(dict()),
-            enabled=True,
+            enabled=False,
 
             queue='',  # blank=True, max_length=200,
             exchange='',  # max_length=200, blank=True,
@@ -63,12 +63,13 @@ class FeedSource(models.Model):
     def clean_fields(self, exclude=None):
         super(FeedSource, self).clean_fields(exclude)
 
-        # create and validate the PeriodicTask for this FeedSource
-        # to report it as soon as possible in case it is invalid
-        self.create_related_periodic_task()
+        if self.periodic_task is None:
+            # create and validate the PeriodicTask for this FeedSource
+            # to report it as soon as possible in case it is invalid
+            self.create_related_periodic_task()
 
     def update_periodic_task(self):
-        if not self.periodic_task:
+        if self.periodic_task is None:
             raise ValueError("The PeriodicTask field of FeedSource can't be updated because it is not populated.")
 
         self.periodic_task.enabled = self.enabled
@@ -94,6 +95,6 @@ class FeedSource(models.Model):
 
         self.update_periodic_task()
 
-    # def on_delete(self):
-    #     # TODO: delete periodic task
-    #     pass
+        # def on_delete(self):
+        #     # TODO: delete periodic task
+        #     pass

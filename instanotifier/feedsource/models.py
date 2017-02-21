@@ -6,8 +6,6 @@ from django_celery_beat.admin import PeriodicTaskForm
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.exceptions import ValidationError
 
-from instanotifier.taskapp.tasks import RSS_NOTIFICATION_CHAINING_TASK
-
 
 @python_2_unicode_compatible
 class FeedSource(models.Model):
@@ -27,6 +25,9 @@ class FeedSource(models.Model):
         return self.task_name()
 
     def create_related_periodic_task(self, commit=False):
+        # Inner import here to avoid circular import.
+        from instanotifier.taskapp.tasks import RSS_NOTIFICATION_CHAINING_TASK
+
         if hasattr(self, '_periodic_task_validated'):
             if commit:
                 self._periodic_task_validated.save()

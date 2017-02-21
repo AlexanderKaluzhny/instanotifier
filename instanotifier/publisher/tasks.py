@@ -6,7 +6,7 @@ from instanotifier.publisher.email.publisher import RssNotificationEmailPublishe
 
 # TODO: ignore_result ?
 @shared_task
-def publish(saved_pks):
+def publish(saved_pks, feedsource_pk):
 
-    publisher = RssNotificationEmailPublisher(saved_pks)
+    publisher = RssNotificationEmailPublisher(saved_pks, feedsource_pk)
     publisher.publish()

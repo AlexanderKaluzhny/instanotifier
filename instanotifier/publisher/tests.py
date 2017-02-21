@@ -11,16 +11,31 @@ from instanotifier.notification.tests.utils import create_rssnotifications_from_
 from instanotifier.publisher.email.publisher import RssNotificationEmailPublisher
 from instanotifier.publisher.tasks import publish
 
+from instanotifier.feedsource.models import FeedSource
+from django_celery_beat.models import IntervalSchedule
+
+from instanotifier.notification.utils.feed import delete_test_rss_feed_notifications
+
 
 class TestRssNotificationEmailPublisher(TestCase):
     def setUp(self):
         mail.outbox = []  # reset outbox
 
+        interval = IntervalSchedule(every=30, period='seconds')
+        interval.save()
+        self.feedsource = FeedSource(**dict(
+            url='https://www.example.com/ab/feed/topics/rss?securityToken=2casdasdvuybf',
+            email_to='sampleAAA@example.com',
+            interval=interval,
+            enabled=False,
+        ))
+        self.feedsource.save()
+
         self.saved_pks = create_rssnotifications_from_test_feed()
 
     def test_render_notification(self):
         pk = self.saved_pks[0]
-        publisher = RssNotificationEmailPublisher(self.saved_pks)
+        publisher = RssNotificationEmailPublisher(self.saved_pks, self.feedsource.pk)
 
         # make sure notification is rendered
         notification = RssNotification.objects.get(pk=pk)
@@ -33,7 +48,7 @@ class TestRssNotificationEmailPublisher(TestCase):
         """ sends email using the smtp email backend to be received in the mailhog """
 
         pk = self.saved_pks[0]
-        publisher = RssNotificationEmailPublisher(self.saved_pks)
+        publisher = RssNotificationEmailPublisher(self.saved_pks, self.feedsource.pk)
 
         notification = RssNotification.objects.get(pk=pk)
         rendered_content = publisher.render_notification(notification)
@@ -43,7 +58,7 @@ class TestRssNotificationEmailPublisher(TestCase):
         # make sure email is sent
 
         pk = self.saved_pks[0]
-        publisher = RssNotificationEmailPublisher(self.saved_pks)
+        publisher = RssNotificationEmailPublisher(self.saved_pks, self.feedsource.pk)
 
         notification = RssNotification.objects.get(pk=pk)
         rendered_content = publisher.render_notification(notification)
@@ -55,7 +70,7 @@ class TestRssNotificationEmailPublisher(TestCase):
         # makes sure multiple emails are sent
 
         mail.outbox = []  # reset outbox
-        publisher = RssNotificationEmailPublisher(self.saved_pks)
+        publisher = RssNotificationEmailPublisher(self.saved_pks, self.feedsource.pk)
         publisher.publish()
         self.assertEqual(len(mail.outbox), len(self.saved_pks))
 
@@ -63,13 +78,45 @@ class TestRssNotificationEmailPublisher(TestCase):
 class TestPublishTask(TestCase):
     def setUp(self):
         self.saved_pks = create_rssnotifications_from_test_feed()
-        assert(len(self.saved_pks) > 0)
+        assert (len(self.saved_pks) > 0)
 
     @mock.patch('instanotifier.publisher.tasks.RssNotificationEmailPublisher.publish')
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_publish_task(self, publish_method_mock):
+        # TODO: pass FeedSource, use TestFeedSourceAutoCleanupContext
         publish.delay(self.saved_pks).get()
         publish_method_mock.assert_called()
+
+
+class TestFeedSourceAutoCleanupContext(object):
+    """ A context manager that creates the disabled FeedSource instance with all the related fields and
+        cleanup everything on exit.
+    """
+
+    def __init__(self):
+        pass
+
+    def __enter__(self):
+        delete_test_rss_feed_notifications()
+
+        self.interval = IntervalSchedule(every=180, period='days')
+        self.interval.save()
+        self.feedsource = FeedSource(**dict(
+            url='https://www.example.com/ab/feed/topics/rss?securityToken=2casdasdvuybf',
+            email_to='sampleAAA@example.com',
+            interval=self.interval,
+            enabled=False,
+        ))
+        self.feedsource.save()
+        self.feedsource_pk = self.feedsource.pk
+        return self
+
+    def __exit__(self, exc, value, tb):
+        delete_test_rss_feed_notifications()
+
+        self.feedsource.delete()
+        self.feedsource.periodic_task.delete()
+        self.interval.delete()
 
 
 def test_consume_feed_task_chaining():
@@ -84,19 +131,15 @@ def test_consume_feed_task_chaining():
     from instanotifier.fetcher.tasks import fetch
     from instanotifier.parser.tasks import parse
     from instanotifier.fetcher.rss.utils import _rss_file_path
-    from instanotifier.notification.utils.feed import delete_test_rss_feed_notifications
 
-    delete_test_rss_feed_notifications()
+    with TestFeedSourceAutoCleanupContext() as context:
+        original_notification_count = RssNotification.objects.count()
+        print 'Original notifications count: %s' % (original_notification_count)
 
-    original_notification_count = RssNotification.objects.count()
-    print 'Original notifications count: %s' % (original_notification_count)
+        task_flow = chain(fetch.s(_rss_file_path()), parse.s(), publish.s(context.feedsource_pk))
+        task_flow.delay().get()
 
-    task_flow = chain(fetch.s(_rss_file_path()), parse.s(), publish.s())
-    task_flow.delay().get()
+        actual_notification_count = RssNotification.objects.count()
+        print 'Actual notifications count: %s' % (actual_notification_count)
 
-    actual_notification_count = RssNotification.objects.count()
-    print 'Actual notifications count: %s' % (actual_notification_count)
-
-    assert (actual_notification_count > original_notification_count)
-
-
+        assert (actual_notification_count > original_notification_count)

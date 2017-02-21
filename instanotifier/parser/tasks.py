@@ -13,7 +13,6 @@ def parse(feed):
 
     saved_pks = create_rssnotification_instances(feed_items)
 
-    # TODO: update SourceModel based on feed_info
+    # TODO: take some general info from feed_info and update the FeedSource
 
-    # TODO: return the value in debug mode only
     return saved_pks

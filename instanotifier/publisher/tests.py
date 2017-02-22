@@ -17,21 +17,50 @@ from django_celery_beat.models import IntervalSchedule
 from instanotifier.notification.utils.feed import delete_test_rss_feed_notifications
 
 
+class TestFeedSourceAutoCleanupContext(object):
+    """ A context manager that creates the disabled FeedSource instance with all the related fields and
+        cleanup everything on exit.
+    """
+
+    def __init__(self):
+        pass
+
+    def __enter__(self):
+        delete_test_rss_feed_notifications()
+
+        self.interval = IntervalSchedule(every=180, period='days')
+        self.interval.save()
+        self.feedsource = FeedSource(**dict(
+            url='https://www.example.com/ab/feed/topics/rss?securityToken=2casdasdvuybf',
+            email_to='sampleAAA@example.com',
+            interval=self.interval,
+            enabled=False,
+        ))
+        self.feedsource.save()
+        self.feedsource_pk = self.feedsource.pk
+        return self
+
+    def __exit__(self, exc, value, tb):
+        delete_test_rss_feed_notifications()
+
+        self.feedsource.delete()
+        self.feedsource.periodic_task.delete()
+        self.interval.delete()
+
+
 class TestRssNotificationEmailPublisher(TestCase):
     def setUp(self):
         mail.outbox = []  # reset outbox
 
-        interval = IntervalSchedule(every=30, period='seconds')
-        interval.save()
-        self.feedsource = FeedSource(**dict(
-            url='https://www.example.com/ab/feed/topics/rss?securityToken=2casdasdvuybf',
-            email_to='sampleAAA@example.com',
-            interval=interval,
-            enabled=False,
-        ))
-        self.feedsource.save()
+        self._feedsource_test_context = TestFeedSourceAutoCleanupContext()
+        self._feedsource_test_context.__enter__()
+
+        self.feedsource = self._feedsource_test_context.feedsource
 
         self.saved_pks = create_rssnotifications_from_test_feed()
+
+    def tearDown(self):
+        self._feedsource_test_context.__exit__(exc=None, value=None, tb=None)
 
     def test_render_notification(self):
         pk = self.saved_pks[0]
@@ -77,46 +106,22 @@ class TestRssNotificationEmailPublisher(TestCase):
 
 class TestPublishTask(TestCase):
     def setUp(self):
+        self._feedsource_test_context = TestFeedSourceAutoCleanupContext()
+        self._feedsource_test_context.__enter__()
+
+        self.feedsource = self._feedsource_test_context.feedsource
+
         self.saved_pks = create_rssnotifications_from_test_feed()
         assert (len(self.saved_pks) > 0)
+
+    def tearDown(self):
+        self._feedsource_test_context.__exit__(exc=None, value=None, tb=None)
 
     @mock.patch('instanotifier.publisher.tasks.RssNotificationEmailPublisher.publish')
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_publish_task(self, publish_method_mock):
-        # TODO: pass FeedSource, use TestFeedSourceAutoCleanupContext
-        publish.delay(self.saved_pks).get()
+        publish.delay(self.saved_pks, self.feedsource.pk).get()
         publish_method_mock.assert_called()
-
-
-class TestFeedSourceAutoCleanupContext(object):
-    """ A context manager that creates the disabled FeedSource instance with all the related fields and
-        cleanup everything on exit.
-    """
-
-    def __init__(self):
-        pass
-
-    def __enter__(self):
-        delete_test_rss_feed_notifications()
-
-        self.interval = IntervalSchedule(every=180, period='days')
-        self.interval.save()
-        self.feedsource = FeedSource(**dict(
-            url='https://www.example.com/ab/feed/topics/rss?securityToken=2casdasdvuybf',
-            email_to='sampleAAA@example.com',
-            interval=self.interval,
-            enabled=False,
-        ))
-        self.feedsource.save()
-        self.feedsource_pk = self.feedsource.pk
-        return self
-
-    def __exit__(self, exc, value, tb):
-        delete_test_rss_feed_notifications()
-
-        self.feedsource.delete()
-        self.feedsource.periodic_task.delete()
-        self.interval.delete()
 
 
 def test_consume_feed_task_chaining():

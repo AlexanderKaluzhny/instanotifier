@@ -43,7 +43,6 @@ class RssNotificationEmailPublisher(object):
         return rendered_content
 
     def publish(self):
-        # TODO: get email address from FeedSource
         rendered_content = ''
         queryset = RssNotification.objects.filter(pk__in=self.notifications_pks)
         for notification in queryset:

@@ -42,6 +42,7 @@ redis>=2.10.5
 
 
 celery==4.0.2
+django-celery-beat==1.0.1
 
 feedparser==5.2.1
 

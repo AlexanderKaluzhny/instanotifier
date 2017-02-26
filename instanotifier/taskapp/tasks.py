@@ -16,5 +16,7 @@ def _get_chain(feedsource_pk):
 def RSS_NOTIFICATION_CHAINING_TASK(feedsource_pk):
     url = FeedSource.objects.values_list('url', flat=True).get(pk=feedsource_pk)
 
+    # TODO: pass feedsource_pk into fetch
+
     task_flow = _get_chain(feedsource_pk)
     task_flow.delay(url)

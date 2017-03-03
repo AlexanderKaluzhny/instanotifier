@@ -11,6 +11,59 @@ Checking for new feed entries periodically, accumulates new entries and sends th
 :License: MIT
 
 
+Introductory Documentation
+==========================
+
+Goal
+----
+Periodically check for updates on some source (RSS, API, etc.), store new entries into db, and send notifications about the new ones (email, FB Messenger, push, Slack, etc.).
+
+Components
+----------
+**Fetcher** → **Parser** → **Model**  → **Publisher**
+
+**Fetcher**  ← *(source from where to fetch)* ← **FeedSource settings** → (*target where to send notification)* → **Publisher**
+
+
+:Fetcher: Gets data from the particular source (RSS, API)
+:Parser: Formalize the data fetched from the particular source into some model instance
+:Filter: Having the set of new data entries, filters out the existing ones
+:Model: Saves the data into the db
+:Publisher: Sends out the data into the particular channel (email, fb messenger, etc.)
+:FeedSource Settings: The settings application for wiring up the source to fetch from; target to publish notifications to; interval with which to fetch data; and on/off switcher
+
+
+Implemented functionality
+-------------------------
+
+* Modular architecture
+* RssFetcher → RssParser → RssNotification model → Email publisher
+* Running fetcher, parser, publisher in separate tasks
+* FeedSource settings application
+* Automatic setting of periodic tasks according to the FeedSource settings through Celery Beat
+* Using of FeedSource instance data in the RssFetcher and Email publisher
+* Tests
+* User registration, integration with Mailgun (out of box from the cookiecutter project template)
+* Ansible deployment scripts for VPS (Located in `separate repository`_)
+
+.. _`separate repository`: https://github.com/AlexanderKaluzhny/deployment-scripts/tree/v0.7
+
+
+Possible features to be added
+-----------------------------
+
+* Allow sending of emails to the verified user email only
+* Run Celery tasks in separate queues
+* Send logs to log aggregator
+* Send errors to Sentry
+* Monitor server metrics
+* Cache existing entry ids in the Redis to avoid requests to db every time the feed is fetched
+* Using API of specific source platform, request additional information about particular source entry
+* Getting updates on already saved entries
+* Expose access to saved entries through REST API
+* Use non-blocking I/O for fetching of RSS
+
+
 Settings
 --------
 
@@ -112,6 +165,13 @@ See detailed `cookiecutter-django Docker documentation`_.
 .. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 
 
+VPS Server using Ansible and Fabric
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Scripts are located `in this repository`_.
+
+.. _`in this repository`: https://github.com/AlexanderKaluzhny/deployment-scripts
+
 
 Patching Celery Beat
 ^^^^^^^^^^^^^^^^^^^^
@@ -119,6 +179,6 @@ Patching Celery Beat
 .. code-block:: bash
 
     cd instanotifier/utility
-    ./apply_celery_patch.sh
+    ./apply_celery_patch.sh <path to virtualenv>
 
 It will copy the requirements/celery_beat_tick.patch and apply it.

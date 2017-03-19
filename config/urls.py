@@ -22,6 +22,9 @@ urlpatterns = [
     url(r'^users/', include('instanotifier.users.urls', namespace='users')),
     url(r'^accounts/', include('allauth.urls')),
 
+    # API.v1
+    url(r'^api/v1/', include('instanotifier.api.urls', namespace='api-v1')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

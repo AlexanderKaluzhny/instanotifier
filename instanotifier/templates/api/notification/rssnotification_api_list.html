@@ -4,13 +4,20 @@
 
 {% block content %}
 
-  {% if paginator %}
   <div class="row">
-      <nav>
-        {% bootstrap_paginate paginator.page range=10 %}
-      </nav>
-  </div>
+  {% if paginator %}
+      {% bootstrap_paginate paginator.page range=10 %}
   {% endif %}
+
+  {% if filter_form %}
+  <button style="float: right; margin: 20px 0px 20px 0px" data-toggle="modal" data-target="#filtersModal"
+          class="btn btn-default">
+    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+    Search
+  </button>
+  {% endif %}
+  </div>
+
   <div class="row">
       <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         {% for notification in results %}
@@ -38,6 +45,10 @@
         {% bootstrap_paginate paginator.page range=10 %}
       </nav>
   </div>
+  {% endif %}
+
+  {% if filter_form %}
+    {{ filter_form }}
   {% endif %}
 
 {% endblock content %}

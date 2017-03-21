@@ -10,11 +10,15 @@ from instanotifier.api.serializers import RssNotificationSerializer
 from instanotifier.notification.models import RssNotification
 
 
-class ListViewTemplateRenderer(TemplateHTMLRenderer):
+class ListViewTemplateRenderer(TemplateHTMLRenderer, BrowsableAPIRenderer):
+    """ Renders the list of RssNotifications into an html. Supports searching. """
+
     template_name = 'api/notification/rssnotification_api_list.html'
 
     def get_template_context(self, data, renderer_context):
         view = renderer_context['view']
+        request = renderer_context['request']
+        response = renderer_context['response']
 
         context = super(ListViewTemplateRenderer, self).get_template_context(data, renderer_context)
 
@@ -24,6 +28,8 @@ class ListViewTemplateRenderer(TemplateHTMLRenderer):
             paginator = None
 
         context['paginator'] = paginator
+        context['filter_form'] = self.get_filter_form(data, view, request)
+
         return context
 
 
@@ -34,7 +40,7 @@ class PaginationSettings(PageNumberPagination):
 class NotificationListView(ListAPIView):
     queryset = RssNotification.objects.all()
     serializer_class = RssNotificationSerializer
-    renderer_classes = (BrowsableAPIRenderer, ListViewTemplateRenderer, JSONRenderer,)
+    renderer_classes = (ListViewTemplateRenderer, JSONRenderer, BrowsableAPIRenderer, )
 
     pagination_class = PaginationSettings
     # permission_classes =

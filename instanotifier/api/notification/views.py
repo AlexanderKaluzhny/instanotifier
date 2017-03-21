@@ -50,3 +50,30 @@ class NotificationListView(ListAPIView):
     # def get_renderer_context(self):
     #     context = super(NotificationListView, self).get_renderer_context()
 
+
+class RssNotificationDateSerializer(object):
+    """ RssNotification Date Serializer mock object """
+
+    def __init__(self, queryset, *args, **kwargs):
+        self.queryset = queryset
+        self.many = kwargs.get('many', False)
+
+    @property
+    def data(self):
+        # TODO: return serialized value
+        return dict(results=self.queryset)
+
+
+
+class NotificationDatesListView(ListAPIView):
+    template_name = 'api/notification/rssnotification_date_list.html'
+    renderer_classes = (TemplateHTMLRenderer, JSONRenderer,)
+    serializer_class = RssNotificationDateSerializer
+
+    def get_serializer(self, queryset, many):
+        serializer = super(NotificationDatesListView, self).get_serializer(queryset, many)
+        return serializer
+
+    def get_queryset(self):
+        date_times = RssNotification.objects.values_list('published_parsed', flat=True)
+        return date_times

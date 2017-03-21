@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% load bootstrap_pagination %}
+
+{% block content %}
+
+  {% if paginator %}
+  <div class="row">
+      <nav>
+        {% bootstrap_paginate paginator.page range=10 %}
+      </nav>
+  </div>
+  {% endif %}
+  <div class="row">
+      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        {% for notification in results %}
+          <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="notification-heading-{{ forloop.counter }}">
+              <h4 class="panel-title">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#notification-data-{{ forloop.counter }}" aria-expanded="false" aria-controls="notification-data-{{ forloop.counter }}">
+                  {{ notification.title }}
+                  </p>{{ notification.published_parsed }}
+                </a>
+              </h4>
+            </div>
+            <div id="notification-data-{{ forloop.counter }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="notification-heading-{{ forloop.counter }}">
+              <div class="panel-body">
+                  {{ notification.summary|safe }}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+  </div>
+  {% if paginator %}
+  <div class="row">
+      <nav>
+        {% bootstrap_paginate paginator.page range=10 %}
+      </nav>
+  </div>
+  {% endif %}
+
+{% endblock content %}
+
+{% block javascript %}
+{{ block.super }}
+  <script>$('#accordion .collapse').collapse('hide');</script>
+{% endblock %}
+

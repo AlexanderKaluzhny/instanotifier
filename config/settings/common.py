@@ -62,7 +62,7 @@ THIRD_PARTY_APPS = (
     'allauth.socialaccount',  # registration
 
     'django_celery_beat',
-
+    'bootstrap_pagination',
 )
 
 # Apps specific for this project go here.

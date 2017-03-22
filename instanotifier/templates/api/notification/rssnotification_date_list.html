@@ -1,3 +1,12 @@
-{% for rssnotification_date in results %}
-{{ rssnotification_date }}<br/>
-{% endfor %}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="list-group">
+  {% for object in results %}
+  <a class="list-group-item" data-id="" href="{% url 'api-v1:rssnotification-list' %}?published_parsed__date={{ object.published_parsed_date }}">
+    {{ object.published_parsed_date }}
+  </a>
+  {% endfor %}
+</div>
+
+{% endblock %}

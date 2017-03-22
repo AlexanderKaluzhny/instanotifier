@@ -5,7 +5,7 @@ import instanotifier.parser.rss.utils as parser_utils
 from instanotifier.notification.models import RssNotification
 from instanotifier.notification.tests.utils import create_rssnotifications_from_test_feed
 
-from instanotifier.api.serializers import RssNotificationSerializer
+from instanotifier.api.serializers import RssNotificationSerializer, RssNotificationDateSerializer
 
 
 class TestRssNotificationSerializer(TestCase):
@@ -22,3 +22,19 @@ class TestRssNotificationSerializer(TestCase):
 
         serializer = RssNotificationSerializer(data=json_feed_item)
         self.assertTrue(serializer.is_valid())
+
+
+class TestRssNotificationDateSerializer(TestCase):
+    def setUp(self):
+        self.saved_pks = create_rssnotifications_from_test_feed()
+        # get the queryset of datetime.date objects
+        self.dates = RssNotification.objects.dates('published_parsed', 'day')
+
+    def test_date_serializer(self):
+        data = {
+            'published_parsed_date': self.dates[0]
+        }
+        serializer = RssNotificationDateSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.data['published_parsed_date'], str(data['published_parsed_date']))
+

@@ -28,7 +28,7 @@ class TestNotificationDatesListView(TestCase):
         self.assertTrue(len(response.data) == len(self.dates))
         for obj in response.data:
             self.assertTrue(obj['published_parsed_date'] in self.dates)
-
+            self.assertTrue(obj['dates_count'] != 0)
 
 class TestTemplateHTMLRendererBase(TestCase):
     pass

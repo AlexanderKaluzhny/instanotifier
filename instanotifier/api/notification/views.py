@@ -1,5 +1,5 @@
 from django.db.models.functions import Trunc
-from django.db.models import DateField
+from django.db.models import DateField, Count
 from django.db.models.expressions import F
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -54,6 +54,7 @@ class ListViewTemplateRenderer(TemplateHTMLRendererBase, BrowsableAPIRenderer):
 
         context['paginator'] = paginator
         context['filter_form'] = self.get_filter_form(data, view, request)
+        context['filter_date_used'] = view.filter_date_used if hasattr(view, 'filter_date_used') else ''
 
         return context
 
@@ -76,6 +77,14 @@ class NotificationListView(ListAPIView):
     filter_fields = {
         'published_parsed': ['date']  # filtering datetime using the __date lookup function
     }
+
+    def filter_queryset(self, queryset):
+        qs = super(NotificationListView, self).filter_queryset(queryset)
+
+        if 'published_parsed__date' in self.request.query_params:
+            self.filter_date_used = self.request.query_params['published_parsed__date']
+
+        return qs
 
 
 class NotificationDatesListView(ListAPIView):
@@ -100,6 +109,8 @@ class NotificationDatesListView(ListAPIView):
             plain_field=F('published_parsed')
         ).values(
             'published_parsed_date'
-        ).distinct().filter(plain_field__isnull=False).order_by('-published_parsed_date')
+        ).distinct().filter(plain_field__isnull=False).order_by(
+            '-published_parsed_date'
+        ).annotate(dates_count=Count('published_parsed'))
 
         return date_times

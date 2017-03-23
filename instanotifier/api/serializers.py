@@ -18,3 +18,4 @@ class RssNotificationDateSerializer(serializers.Serializer):
     """ Serializer for separating the RssNotifications' published_parsed dates"""
 
     published_parsed_date = serializers.DateField(format=RSSNOTIFICATION_DATE_OUTPUT_FORMAT)
+    dates_count = serializers.IntegerField()

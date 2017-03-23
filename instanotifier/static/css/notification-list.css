@@ -1,0 +1,16 @@
+.notification-list-page-header .pagination {
+  margin: 0px 0px 0px 0px !important;
+}
+
+.notification-list-page-header {
+  padding-bottom: 20px;
+}
+
+.notification-list {
+  padding-left: 0px !important;
+}
+
+.notification-list, .notification-date-list {
+  max-height: 75vh;
+  overflow: auto;
+}

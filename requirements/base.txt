@@ -51,4 +51,6 @@ html5lib==0.999999999
 patch==1.16
 
 djangorestframework==3.6.2
+django-filter==1.0.1
+
 django-bootstrap-pagination==1.6.2

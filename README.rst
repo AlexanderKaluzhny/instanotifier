@@ -30,8 +30,8 @@ Components
 :Filter: Having the set of new data entries, filters out the existing ones
 :Model: Saves the data into the db
 :Publisher: Sends out the data into the particular channel (email, fb messenger, etc.)
-:FeedSource Settings: The settings application for wiring up the source to fetch from; target to publish notifications to; interval with which to fetch data; and on/off switcher
-
+:FeedSource Settings: The settings application for wiring up the source to fetch from, target to publish notifications to, interval with which to fetch data, and on/off switcher
+:API: REST API exposing access to stored data, includes UI
 
 Implemented functionality
 -------------------------
@@ -46,8 +46,11 @@ Implemented functionality
 * User registration, integration with Mailgun (out of box from the cookiecutter project template)
 * Ansible deployment scripts for VPS (Located in `separate repository`_)
 
-.. _`separate repository`: https://github.com/AlexanderKaluzhny/deployment-scripts/tree/v0.7
+* REST API based UI listing all the saved RssNotifications, including searching and filtering by date
+* UI deployed to Heroku `instanotifier.herokuapp.com`_ (It is a free dyno, so wait a little for it to wake up)
 
+.. _`separate repository`: https://github.com/AlexanderKaluzhny/deployment-scripts/tree/v0.7
+.. _`instanotifier.herokuapp.com`: https://instanotifier.herokuapp.com/api/v1/?format=html
 
 Possible features to be added
 -----------------------------

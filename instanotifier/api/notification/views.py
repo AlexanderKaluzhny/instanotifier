@@ -4,7 +4,7 @@ from django.db.models.expressions import F
 
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer, TemplateHTMLRenderer
 
 from rest_framework.pagination import PageNumberPagination
@@ -114,3 +114,11 @@ class NotificationDatesListView(ListAPIView):
         ).annotate(dates_count=Count('published_parsed'))
 
         return date_times
+
+
+class NotificationVotingView(UpdateAPIView):
+    # TODO: allow for current user entries only
+    serializer_class = RssNotificationSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        pass

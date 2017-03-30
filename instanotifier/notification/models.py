@@ -20,6 +20,16 @@ RSS_FEED_ENTRY_FIELDS = [
 
 @python_2_unicode_compatible
 class RssNotification(models.Model):
+
+    RATING_DEFAULT = 0
+    RATING_UPVOTED = 1
+    RATING_DOWNVOTED = -1
+    RATING=(
+        (RATING_DEFAULT, 'default'),
+        (RATING_UPVOTED, 'upvoted'),
+        (RATING_DOWNVOTED, 'downvoted'),
+    )
+
     internal_id = models.CharField(_("Internal entry id"), max_length=255, db_index=True, blank=False, editable=False)
 
     title = models.CharField(_("Title"), max_length=255, blank=False)
@@ -27,6 +37,8 @@ class RssNotification(models.Model):
     link = models.URLField(_("Link"), blank=False)
     published_parsed = models.DateTimeField(_("Published"))
     entry_id = models.CharField(_("Rss entry id"), max_length=2083, blank=False)
+
+    rating = models.SmallIntegerField(choices=RATING, default=RATING_DEFAULT, null=False)
 
     @staticmethod
     def compute_internal_id_hash(id):

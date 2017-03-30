@@ -34,10 +34,21 @@
           <div class="panel panel-default">
             <div class="panel-heading" role="tab" id="notification-heading-{{ forloop.counter }}">
               <h4 class="panel-title">
-                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#notification-data-{{ forloop.counter }}" aria-expanded="false" aria-controls="notification-data-{{ forloop.counter }}">
-                  {{ notification.title }}
-                  </p>{{ notification.published_parsed }}
-                </a>
+                <div class="row">
+                  <div class="col-md-8">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#notification-data-{{ forloop.counter }}" aria-expanded="false" aria-controls="notification-data-{{ forloop.counter }}">
+                      {{ notification.title }} - {{ notification.rating }}
+                      </p>{{ notification.published_parsed }}
+                    </a>
+                  </div>
+                  <div class="col-md-4">
+                    <form id="tmp-upvote-form" method="PATCH" action="{% url '{{ }}/upvote'%}">
+                      <button class="submit btn btn-default">Upvote</button>
+                    </form>
+                    <button class="submit btn btn-default">Downvote</button>
+                    <button class="submit btn btn-default">Clear</button>
+                  </div>
+                </div>
               </h4>
             </div>
             <div id="notification-data-{{ forloop.counter }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="notification-heading-{{ forloop.counter }}">

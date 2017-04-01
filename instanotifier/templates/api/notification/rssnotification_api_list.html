@@ -12,6 +12,7 @@
   <span id="date-list-url" data-url="{% url 'api-v1:rssnotification-date-list'%}"></span>
   <span id="date-list-filtering-url" data-url="{% url 'api-v1:rssnotification-list' %}" data-filter-param="?published_parsed__date="></span>
   <span id="filter_date_used" data-date="{{ filter_date_used }}"></span>
+  <span id="rating-url" data-url="{% url 'api-v1:rssnotification-rating' %}"></span>
 
   <div class="row notification-list-page-header">
     {% if paginator %}
@@ -42,11 +43,11 @@
                     </a>
                   </div>
                   <div class="col-md-4">
-                    <form id="tmp-upvote-form" method="PATCH" action="{% url '{{ }}/upvote'%}">
-                      <button class="submit btn btn-default">Upvote</button>
-                    </form>
-                    <button class="submit btn btn-default">Downvote</button>
-                    <button class="submit btn btn-default">Clear</button>
+                    <div class="rating-buttons" data-notification-id="{{ notification.id }}">
+                      <button class="submit btn btn-default" data-action="upvoted">Upvote</button>
+                      <button class="submit btn btn-default" data-action="downvoted">Downvote</button>
+                      <button class="submit btn btn-default" data-action="default">Clear</button>
+                    </div>
                   </div>
                 </div>
               </h4>
@@ -75,5 +76,6 @@
 {% block javascript %}
 {{ block.super }}
   <script>$('#accordion .collapse').collapse('hide');</script>
-  <script type="text/javascript" src="{% static 'js/notification-list.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/notification-date-list.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/notification-list-rating.js' %}"></script>
 {% endblock %}

@@ -4,11 +4,14 @@ from django.db.models.expressions import F
 
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView, GenericAPIView, get_object_or_404
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer, TemplateHTMLRenderer
 
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import filters
+
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 
 from instanotifier.api.serializers import RssNotificationSerializer, RssNotificationDateSerializer
 from instanotifier.notification.models import RssNotification
@@ -116,9 +119,45 @@ class NotificationDatesListView(ListAPIView):
         return date_times
 
 
-class NotificationVotingView(UpdateAPIView):
+class NotificationVotingView(GenericAPIView):
     # TODO: allow for current user entries only
+    queryset = RssNotification.objects.all()
     serializer_class = RssNotificationSerializer
 
-    def partial_update(self, request, *args, **kwargs):
-        pass
+    def get_object(self):
+        pk = self.request.data.get('id')
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=pk)
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
+    def _get_rating_value(self):
+        rating = self.request.data.get('rating', None)
+        if rating is None:
+            raise ValidationError("The \'rating\' parameter was not specified.")
+
+        rating_value = RssNotification.RATINGS.get(rating, None)
+        if rating_value is None:
+            raise ValidationError("The \'rating\' parameter was incorrectly specified.")
+
+        return rating_value
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        rating_data = {
+            'rating': self._get_rating_value()
+        }
+
+        serializer = self.get_serializer(instance, data=rating_data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)

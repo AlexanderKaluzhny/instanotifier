@@ -8,7 +8,7 @@ RSSNOTIFICATION_DATE_OUTPUT_FORMAT = '%Y-%m-%d'
 class RssNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = RssNotification
-        fields = ['title', 'summary', 'link', 'published_parsed', 'rating']
+        fields = ['id', 'title', 'summary', 'link', 'published_parsed', 'rating']
         extra_kwargs = {
             'published_parsed': {'format': '%H:%M:%S %Y-%m-%d'}
         }

@@ -24,11 +24,22 @@ class RssNotification(models.Model):
     RATING_DEFAULT = 0
     RATING_UPVOTED = 1
     RATING_DOWNVOTED = -1
+
+    RATING_DEFAULT_READABLE = 'default'
+    RATING_UPVOTED_READABLE = 'upvoted'
+    RATING_DOWNVOTED_READABLE = 'downvoted'
+
     RATING=(
-        (RATING_DEFAULT, 'default'),
-        (RATING_UPVOTED, 'upvoted'),
-        (RATING_DOWNVOTED, 'downvoted'),
+        (RATING_DEFAULT, RATING_DEFAULT_READABLE),
+        (RATING_UPVOTED, RATING_UPVOTED_READABLE),
+        (RATING_DOWNVOTED, RATING_DOWNVOTED_READABLE),
     )
+
+    RATINGS = {
+        RATING_DEFAULT_READABLE: RATING_DEFAULT,
+        RATING_UPVOTED_READABLE: RATING_UPVOTED,
+        RATING_DOWNVOTED_READABLE: RATING_DOWNVOTED,
+    }
 
     internal_id = models.CharField(_("Internal entry id"), max_length=255, db_index=True, blank=False, editable=False)
 

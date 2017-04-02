@@ -32,7 +32,7 @@
     <div class="col-md-9 notification-list">
       <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         {% for notification in results %}
-          <div class="panel panel-default">
+          <div class="panel panel-default notification-list-item" data-id="{{ notification.id }}" data-rating="{{ notification.rating }}">
             <div class="panel-heading" role="tab" id="notification-heading-{{ forloop.counter }}">
               <h4 class="panel-title">
                 <div class="row">
@@ -43,10 +43,9 @@
                     </a>
                   </div>
                   <div class="col-md-4">
-                    <div class="rating-buttons" data-notification-id="{{ notification.id }}">
-                      <button class="submit btn btn-default" data-action="upvoted">Upvote</button>
-                      <button class="submit btn btn-default" data-action="downvoted">Downvote</button>
-                      <button class="submit btn btn-default" data-action="default">Clear</button>
+                    <div class="rating-buttons">
+                      <button id="upvote-button" class="submit btn btn-default" data-action="upvoted">Upvote</button>
+                      <button id="downvote-button" class="submit btn btn-default" data-action="downvoted">Downvote</button>
                     </div>
                   </div>
                 </div>
@@ -57,7 +56,7 @@
                   {{ notification.summary|safe }}
               </div>
             </div>
-          </div>
+          </div> <!-- <div class="panel panel-default -->
         {% endfor %}
       </div>
     </div>

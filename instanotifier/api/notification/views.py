@@ -120,6 +120,8 @@ class NotificationDatesListView(ListAPIView):
 
 
 class NotificationVotingView(GenericAPIView):
+    """Endpoint for setting of Notification rating. """
+
     # TODO: allow for current user entries only
     queryset = RssNotification.objects.all()
     serializer_class = RssNotificationSerializer
@@ -134,6 +136,8 @@ class NotificationVotingView(GenericAPIView):
         return obj
 
     def _get_rating_value(self):
+        """ Get the rating value from the request. """
+
         rating = self.request.data.get('rating', None)
         if rating is None:
             raise ValidationError("The \'rating\' parameter was not specified.")

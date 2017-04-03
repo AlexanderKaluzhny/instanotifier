@@ -1,10 +1,6 @@
-from django.db.models.functions import Trunc
-from django.db.models import DateField, Count
-from django.db.models.expressions import F
-
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework.generics import ListAPIView, UpdateAPIView, GenericAPIView, get_object_or_404
+from rest_framework.generics import ListAPIView, GenericAPIView, get_object_or_404
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer, TemplateHTMLRenderer
 
 from rest_framework.pagination import PageNumberPagination
@@ -14,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
 from instanotifier.api.serializers import RssNotificationSerializer, RssNotificationDateSerializer
-from instanotifier.notification.models import RssNotification
+from instanotifier.notification.models import RssNotification, queryset_exclude_downvoted
 
 
 class TemplateHTMLRendererBase(TemplateHTMLRenderer):
@@ -66,6 +62,24 @@ class PaginationSettings(PageNumberPagination):
     page_size = 10
 
 
+class RssNotificationFilterBackend(DjangoFilterBackend):
+    """ FilterBackend that includes custom logic for excluding of downvoted RssNotifications. """
+    def filter_queryset(self, request, queryset, view):
+        queryset = super(RssNotificationFilterBackend, self).filter_queryset(request, queryset, view)
+
+        # skip custom filtering of downvoted if explicitly filter by 'rating'
+        if 'rating' in request.query_params:
+            return queryset
+
+        # don't filter by rating if '?include_rating=all' specified
+        include_all = request.query_params.get('include_rating', None)
+        if include_all and include_all == 'all':
+            return queryset
+
+        queryset = queryset_exclude_downvoted(queryset)
+        return queryset
+
+
 class NotificationListView(ListAPIView):
     """ Renders list of RssNotification objects """
 
@@ -75,16 +89,19 @@ class NotificationListView(ListAPIView):
 
     pagination_class = PaginationSettings
     # permission_classes =
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
+    filter_backends = (filters.SearchFilter, RssNotificationFilterBackend)
     search_fields = ['title', 'summary']
     filter_fields = {
-        'published_parsed': ['date']  # filtering datetime using the __date lookup function
+        'published_parsed': ['date'],  # filtering datetime using the __date lookup function
+        'rating': ['exact'],
     }
+    # TODO: add 'show including downvoted' checkbox
 
     def filter_queryset(self, queryset):
         qs = super(NotificationListView, self).filter_queryset(queryset)
 
         if 'published_parsed__date' in self.request.query_params:
+            # save current date filtered to highlight it on the page
             self.filter_date_used = self.request.query_params['published_parsed__date']
 
         return qs
@@ -106,16 +123,7 @@ class NotificationDatesListView(ListAPIView):
             Date is a trunc of a published_parsed datetime field.
         """
 
-        # NOTE: order_by influences the distinct() results here
-        date_times = RssNotification.objects.annotate(
-            published_parsed_date=Trunc('published_parsed', 'day', output_field=DateField()),
-            plain_field=F('published_parsed')
-        ).values(
-            'published_parsed_date'
-        ).distinct().filter(plain_field__isnull=False).order_by(
-            '-published_parsed_date'
-        ).annotate(dates_count=Count('published_parsed'))
-
+        date_times = RssNotification.objects.get_dates_only()
         return date_times
 
 

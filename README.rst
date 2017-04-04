@@ -49,7 +49,7 @@ Implemented functionality
 
 * REST API for listing, rating, searching, filtering of stored entries
 * API based UI listing all the saved RssNotifications. Allows rating of items, searching, filtering by date
-* UI deployed to Heroku `instanotifier.herokuapp.com`_ (It is a free dyno, so wait a little for it to wake up)
+* UI is deployed to Heroku `instanotifier.herokuapp.com`_ (It is a free dyno, so wait a little for it to wake up)
 
 .. _`separate repository`: https://github.com/AlexanderKaluzhny/deployment-scripts/tree/v0.7
 .. _`instanotifier.herokuapp.com`: https://instanotifier.herokuapp.com/api/v1/?format=html

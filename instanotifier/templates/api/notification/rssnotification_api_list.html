@@ -49,16 +49,20 @@
             <div class="panel-heading" role="tab" id="notification-heading-{{ forloop.counter }}">
               <h4 class="panel-title">
                 <div class="row">
-                  <div class="col-md-8">
+                  <div class="col-md-10">
                     <a role="button" data-toggle="collapse" data-parent="#accordion" href="#notification-data-{{ forloop.counter }}" aria-expanded="false" aria-controls="notification-data-{{ forloop.counter }}">
-                      {{ notification.title }} - {{ notification.rating }}
+                      {{ notification.title }}
                       </p>{{ notification.published_parsed }}
                     </a>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-2">
                     <div class="rating-buttons">
-                      <button id="upvote-button" class="submit btn btn-default" data-action="upvoted">Upvote</button>
-                      <button id="downvote-button" class="submit btn btn-default" data-action="downvoted">Downvote</button>
+                      <button id="upvote-button" class="submit btn btn-default" data-action="upvoted">
+                        <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                      </button>
+                      <button id="downvote-button" class="submit btn btn-default" data-action="downvoted">
+                        <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+                      </button>
                     </div>
                   </div>
                 </div>

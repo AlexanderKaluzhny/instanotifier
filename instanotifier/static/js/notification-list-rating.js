@@ -12,7 +12,6 @@
       });
     },
     onRequestSuccess: function(data, textStatus, jqXHR) {
-      console.log(data);
       RatingsController.onNotificationRatedResponse(data);
     },
     onRequestFailed: function(xhr, textStatus, error) {
@@ -23,34 +22,43 @@
 
   var RatingsController = {
     ratingsUrl: $('#rating-url').data('url'),
+    ratingButtonsIconClasses: {
+      'upvote': 'fa fa-thumbs-o-up',
+      'upvoted': 'fa fa-thumbs-up',
+      'downvote': 'fa fa-thumbs-o-down',
+      'downvoted': 'fa fa-thumbs-down'
+    },
 
     getNotificationById: function(id) {
       var $notification = $(".notification-list-item[data-id=\"" + id.toString() + "\"]");
       return $notification;
     },
 
+    getRatingButtonIconHtml: function(buttonAction) {
+      var ratingButtonHtmlTemplate = ['<i class="', 'fa fa-thumbs-o-up', '"aria-hidden="true"></i>'];
+      ratingButtonHtmlTemplate[1] = RatingsController.ratingButtonsIconClasses[buttonAction];
+      return ratingButtonHtmlTemplate.join('');
+    },
+
     adjustRatingButtonTitles: function(id, currentRating) {
       var $notification = this.getNotificationById(id);
       var $upvoteButton = $notification.find('#upvote-button');
       var $downvoteButton = $notification.find('#downvote-button');
+
       if (currentRating === 0) {
-        $upvoteButton.text("Upvote");
-        $downvoteButton.text("Downvote");
+        $upvoteButton.html(RatingsController.getRatingButtonIconHtml('upvote'));
+        $downvoteButton.html(RatingsController.getRatingButtonIconHtml('downvote'));
       } else if (currentRating === 1) {
-        $upvoteButton.html("<b>Upvoted</b>");
-        $downvoteButton.text("Downvote");
+        $upvoteButton.html(RatingsController.getRatingButtonIconHtml('upvoted'));
+        $downvoteButton.html(RatingsController.getRatingButtonIconHtml('downvote'));
       } else if (currentRating === -1) {
-        $upvoteButton.text("Upvote");
-        $downvoteButton.html("<b>Donwvoted</b>");
+        $upvoteButton.html(RatingsController.getRatingButtonIconHtml('upvote'));
+        $downvoteButton.html(RatingsController.getRatingButtonIconHtml('downvoted'));
       }
     },
 
-    onAnyRatingButtonClick: function(event) {
-      var $button = $(event.currentTarget);
-      var $currentNotificationItem = $(this).parents(".notification-list-item");
-      var notificationId = $currentNotificationItem.data('id');
-      var notificationCurrentRating = $currentNotificationItem.data('rating');
-      var ratingAction = $button.data('action');
+    getNextRatingAction: function(notificationCurrentRating, ratingClicked) {
+      var ratingAction = ratingClicked;
       var ratingActionInt = 0; // rating is "default"
 
       if (ratingAction === "upvoted") {
@@ -59,12 +67,22 @@
         ratingActionInt = -1;
       }
 
-      // TODO: change the ratingAction to be
+      // TODO: change the ratingAction to be in readable string format.
       if (notificationCurrentRating === ratingActionInt) {
         // set rating to default if user clicked the same rating button at second time;
         ratingAction = "default";
         ratingActionInt = 0;
       }
+      return ratingAction;
+    },
+
+    onAnyRatingButtonClick: function(event) {
+      var $button = $(event.currentTarget);
+      var $currentNotificationItem = $(this).parents(".notification-list-item");
+      var notificationId = $currentNotificationItem.data('id');
+      var notificationCurrentRating = $currentNotificationItem.data('rating');
+      var ratingAction = RatingsController.getNextRatingAction(notificationCurrentRating,
+        $button.data('action'));
 
       var ratingData = {
         "id": notificationId,

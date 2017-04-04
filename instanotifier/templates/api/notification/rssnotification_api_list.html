@@ -15,16 +15,29 @@
   <span id="rating-url" data-url="{% url 'api-v1:rssnotification-rating' %}"></span>
 
   <div class="row notification-list-page-header">
-    {% if paginator %}
-        {% bootstrap_paginate paginator.page range=10 %}
-    {% endif %}
-
-    {% if filter_form %}
-    <button style="float: right; " data-toggle="modal" data-target="#filtersModal"
-            class="btn btn-default">
-      <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-      Search
-    </button>
+    <div class="col-md-8">
+      {% if paginator %}
+      {% bootstrap_paginate paginator.page range=10 %}
+      {% endif %}
+    </div>
+    <div class="col-md-3">
+      {% if rating_checkbox.is_shown %}
+      <div class="checkbox" style="">
+        <a href="{{ rating_checkbox.url }}">
+          <label><input type="checkbox" value="" {{ rating_checkbox_is_checked }}
+                        onclick='window.location.assign("{{ rating_checkbox.url }}")'>Exclude downvoted items from listing</label>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+    <div class="col-md-1">
+      {% if filter_form %}
+      <button style="float: right; " data-toggle="modal" data-target="#filtersModal"
+              class="btn btn-default">
+        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+        Search
+      </button>
+    </div>
     {% endif %}
   </div>
 

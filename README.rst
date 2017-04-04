@@ -1,7 +1,9 @@
 InstaNotifier
 =============
 
-Checking for new feed entries periodically, accumulates new entries and sends the notifications
+Checking for new feed entries periodically, accumulates new entries and sends the notifications.
+Includes API based UI listing all the saved entries. Allows rating, searching, filtering by date (
+deployed to Heroku free dyno `instanotifier.herokuapp.com`_)
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/

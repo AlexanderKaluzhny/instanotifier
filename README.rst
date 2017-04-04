@@ -31,7 +31,8 @@ Components
 :Model: Saves the data into the db
 :Publisher: Sends out the data into the particular channel (email, fb messenger, etc.)
 :FeedSource Settings: The settings application for wiring up the source to fetch from, target to publish notifications to, interval with which to fetch data, and on/off switcher
-:API: REST API exposing access to stored data, includes UI
+:API: REST API exposing access to stored data
+:UI: Displays the stored entries, supports filtering and searching. API based
 
 Implemented functionality
 -------------------------
@@ -46,7 +47,8 @@ Implemented functionality
 * User registration, integration with Mailgun (out of box from the cookiecutter project template)
 * Ansible deployment scripts for VPS (Located in `separate repository`_)
 
-* REST API based UI listing all the saved RssNotifications, including searching and filtering by date
+* REST API for listing, rating, searching, filtering of stored entries
+* API based UI listing all the saved RssNotifications. Allows rating of items, searching, filtering by date
 * UI deployed to Heroku `instanotifier.herokuapp.com`_ (It is a free dyno, so wait a little for it to wake up)
 
 .. _`separate repository`: https://github.com/AlexanderKaluzhny/deployment-scripts/tree/v0.7
@@ -63,7 +65,7 @@ Possible features to be added
 * Cache existing entry ids in the Redis to avoid requests to db every time the feed is fetched
 * Using API of specific source platform, request additional information about particular source entry
 * Getting updates on already saved entries
-* Expose access to saved entries through REST API
+* [Implemented] Expose access to saved entries through REST API
 * Use non-blocking I/O for fetching of RSS
 
 

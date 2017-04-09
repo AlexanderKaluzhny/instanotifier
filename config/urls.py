@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from rest_framework import schemas
+
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
@@ -9,6 +11,9 @@ from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
 from instanotifier.feedsource import urls as feedsource_urls
+
+
+schema_view = schemas.get_schema_view(title="InstaNotifier stored notifications API", description="InstaNotifier stored notifications API")
 
 urlpatterns = [
     url(r'^', include(feedsource_urls)),
@@ -23,6 +28,7 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
 
     # API.v1
+    url(r'^api-schema/', schema_view),
     url(r'^api/v1/', include('instanotifier.api.urls', namespace='api-v1')),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),

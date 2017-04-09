@@ -14,15 +14,16 @@ class CheckboxExcludeDownvotedNotification(object):
 
     @property
     def is_checked(self):
-        is_checked = getattr(self, '_is_checked', True)
+        is_checked = getattr(self, '_is_checked', None)
+        assert is_checked is not None, "checked attribute is not set, yet."
         return is_checked
 
     def set_checked(self, value, view):
         self._is_checked = value
-        self._url = self.build_url_including_downvoted(view, include_all=value)
+        self._url = self.build_url(view, include_all=value)
 
     @classmethod
-    def build_url_including_downvoted(self, view, include_all=False):
+    def build_url(self, view, include_all=False):
         """ Build url to be able to get queryset including downvoted notifications """
         from django.http.request import iri_to_uri
 
@@ -63,7 +64,6 @@ class RatingManager(object):
         # skip custom filtering of downvoted if explicitly filter by 'rating'
         if 'rating' in request.query_params:
             self.checkbox.is_shown = False
-            # TODO: don't show 'show including downvoted' checkbox
             return queryset
 
         # don't filter by rating if '?include_rating=all' specified

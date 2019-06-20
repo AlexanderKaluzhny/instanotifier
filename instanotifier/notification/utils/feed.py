@@ -9,7 +9,7 @@ def delete_test_rss_feed_notifications():
 
     deleted_count = 0
     for item in feed_items:
-        id_hash = RssNotification.compute_internal_id_hash(item['id'])
+        id_hash = RssNotification.compute_internal_id_hash(item["id"])
         try:
             obj = RssNotification.objects.get(internal_id=id_hash)
             if obj:
@@ -19,6 +19,7 @@ def delete_test_rss_feed_notifications():
             pass
 
     return deleted_count
+
 
 def get_item_field(feed_items, item_idx, field_name):
 
@@ -33,6 +34,7 @@ def get_item_field(feed_items, item_idx, field_name):
         raise KeyError("No key %s in %s." % (field_name, item.keys()))
 
     return value
+
 
 def get_test_feed_item_field(item_idx, field_name, feed_path=None):
     feed_items = get_test_rss_feed_items()

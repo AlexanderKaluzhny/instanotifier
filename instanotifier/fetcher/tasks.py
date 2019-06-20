@@ -1,6 +1,7 @@
 from celery import shared_task
 from instanotifier.fetcher.rss.fetcher import RssFetcher, fetch_rss_feed
 
+
 @shared_task
 def fetch(url, source_id=None):
     # Fetcher <-> Source Settings Model

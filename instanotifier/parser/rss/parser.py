@@ -3,30 +3,24 @@ from instanotifier.parser.rss import utils
 """
 Necessary feed info fields: feed_object['feed'].keys()
 """
-RSS_FEED_INFO_FIELDS = [
-    u'title',
-    u'link',
-    u'author',
-    u'published_parsed',
-    u'generator',
-]
+RSS_FEED_INFO_FIELDS = [u"title", u"link", u"author", u"published_parsed", u"generator"]
 """
 Necessary feed info fields: feed_object['entries'][ii].keys()
 """
 RSS_FEED_ENTRY_FIELDS = [
-    u'title',
-    u'summary',
-    u'link',
-    u'published_parsed',
-    u'id'  # hash or leave as is
+    u"title",
+    u"summary",
+    u"link",
+    u"published_parsed",
+    u"id",  # hash or leave as is
 ]
 
 
 class RssParser(object):
     """ Parses RSS feed fetched by the RssFetcher. """
 
-    feed_info_key = 'feed'
-    feed_entries_key = 'entries'
+    feed_info_key = "feed"
+    feed_entries_key = "entries"
 
     def __init__(self, feed):
         self.feed = feed
@@ -52,12 +46,12 @@ class RssParser(object):
 
         if len(feed_items):
             # FIXME: TODO: handle serialization of items in the Parser
-            assert (type(feed_items[0]['published_parsed']) is unicode)
+            assert type(feed_items[0]["published_parsed"]) is unicode
 
         return feed_items
 
     def parse(self):
-        if self.feed['bozo']:
+        if self.feed["bozo"]:
             # feed parsing error occurred.
             # TODO: handle exceptions. Pass wrong file path into feedparser to get an exception.
 

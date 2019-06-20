@@ -6,15 +6,18 @@ class CheckboxExcludeDownvotedNotification(object):
     """ Manages the checkbox for displaying whether the downvoted notifications are excluded from list.
         Provides an url to include the downvoted notifications into listing.
     """
+
     @property
     def url(self):
-        url = getattr(self, '_url', '')
-        assert len(url), "url for getting of queryset including downvoted notifications is not evaluated."
+        url = getattr(self, "_url", "")
+        assert len(
+            url
+        ), "url for getting of queryset including downvoted notifications is not evaluated."
         return url
 
     @property
     def is_checked(self):
-        is_checked = getattr(self, '_is_checked', None)
+        is_checked = getattr(self, "_is_checked", None)
         assert is_checked is not None, "checked attribute is not set, yet."
         return is_checked
 
@@ -34,19 +37,23 @@ class CheckboxExcludeDownvotedNotification(object):
 
         # remove pagination param from query params
         page_num = None
-        if view.pagination_class and current_query_params.get(view.pagination_class.page_query_param, None):
+        if view.pagination_class and current_query_params.get(
+            view.pagination_class.page_query_param, None
+        ):
             page_num = current_query_params.pop(view.pagination_class.page_query_param)
 
         if include_all:
-            current_query_params['include_rating'] = 'all'
-        elif 'include_rating' in current_query_params:
-            current_query_params.pop('include_rating')
+            current_query_params["include_rating"] = "all"
+        elif "include_rating" in current_query_params:
+            current_query_params.pop("include_rating")
 
         query_params_urlencoded = current_query_params.urlencode()
 
-        output_full_path = '%s%s' % (
+        output_full_path = "%s%s" % (
             full_path_no_params,
-            ('?' + iri_to_uri(query_params_urlencoded)) if query_params_urlencoded else ''
+            ("?" + iri_to_uri(query_params_urlencoded))
+            if query_params_urlencoded
+            else "",
         )
         return output_full_path
 
@@ -62,13 +69,13 @@ class RatingManager(object):
         self.checkbox.is_shown = True
 
         # skip custom filtering of downvoted if explicitly filter by 'rating'
-        if 'rating' in request.query_params:
+        if "rating" in request.query_params:
             self.checkbox.is_shown = False
             return queryset
 
         # don't filter by rating if '?include_rating=all' specified
-        include_all = request.query_params.get('include_rating', None)
-        if include_all and include_all == 'all':
+        include_all = request.query_params.get("include_rating", None)
+        if include_all and include_all == "all":
             self.checkbox.set_checked(False, view)
             return queryset
 

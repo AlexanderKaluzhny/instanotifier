@@ -9,21 +9,21 @@ from instanotifier.feedsource.forms import FeedSourceForm
 
 class FeedSourceListView(ListView):
     model = FeedSource
-    template_name = 'feedsource/feedsource_list.html'
+    template_name = "feedsource/feedsource_list.html"
 
 
 class FeedSourceCreateUpdateMixin(object):
     model = FeedSource
     form_class = FeedSourceForm
-    context_object_name = 'feedsource'
+    context_object_name = "feedsource"
 
     def get_success_url(self):
-        return reverse('feedsource:list')
+        return reverse("feedsource:list")
 
 
 class FeedSourceCreateView(FeedSourceCreateUpdateMixin, CreateView):
-    template_name = 'feedsource/feedsource_create.html'
+    template_name = "feedsource/feedsource_create.html"
 
 
 class FeedSourceUpdateView(FeedSourceCreateUpdateMixin, UpdateView):
-    template_name = 'feedsource/feedsource_update.html'
+    template_name = "feedsource/feedsource_update.html"

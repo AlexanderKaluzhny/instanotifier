@@ -19,26 +19,31 @@ RSS_FEED_ENTRY_FIELDS = [
 ]
 """
 
+
 def queryset_exclude_downvoted(qs):
     return qs.exclude(rating=-1)
 
 
 class RssNotificationManager(models.Manager):
-
     def get_dates_only(self):
         """ Returns the queryset containing entries having the date field only.
             Date is a trunc of a published_parsed datetime field.
         """
 
         # NOTE: order_by influences the distinct() results here
-        date_times = RssNotification.objects.annotate(
-            published_parsed_date=Trunc('published_parsed', 'day', output_field=DateField()),
-            plain_field=F('published_parsed')
-        ).values(
-            'published_parsed_date'
-        ).distinct().filter(plain_field__isnull=False).order_by(
-            '-published_parsed_date'
-        ).annotate(dates_count=Count('published_parsed'))
+        date_times = (
+            RssNotification.objects.annotate(
+                published_parsed_date=Trunc(
+                    "published_parsed", "day", output_field=DateField()
+                ),
+                plain_field=F("published_parsed"),
+            )
+            .values("published_parsed_date")
+            .distinct()
+            .filter(plain_field__isnull=False)
+            .order_by("-published_parsed_date")
+            .annotate(dates_count=Count("published_parsed"))
+        )
 
         return date_times
 
@@ -48,9 +53,9 @@ class RssNotification(models.Model):
     RATING_UPVOTED = 1
     RATING_DOWNVOTED = -1
 
-    RATING_DEFAULT_READABLE = 'default'
-    RATING_UPVOTED_READABLE = 'upvoted'
-    RATING_DOWNVOTED_READABLE = 'downvoted'
+    RATING_DEFAULT_READABLE = "default"
+    RATING_UPVOTED_READABLE = "upvoted"
+    RATING_DOWNVOTED_READABLE = "downvoted"
 
     RATING = (
         (RATING_DEFAULT, RATING_DEFAULT_READABLE),
@@ -64,7 +69,13 @@ class RssNotification(models.Model):
         RATING_DOWNVOTED_READABLE: RATING_DOWNVOTED,
     }
 
-    internal_id = models.CharField(_("Internal entry id"), max_length=255, db_index=True, blank=False, editable=False)
+    internal_id = models.CharField(
+        _("Internal entry id"),
+        max_length=255,
+        db_index=True,
+        blank=False,
+        editable=False,
+    )
 
     title = models.CharField(_("Title"), max_length=255, blank=False)
     summary = models.TextField(_("Summary"), blank=True)
@@ -72,13 +83,15 @@ class RssNotification(models.Model):
     published_parsed = models.DateTimeField(_("Published"))
     entry_id = models.CharField(_("Rss entry id"), max_length=2083, blank=False)
 
-    rating = models.SmallIntegerField(choices=RATING, default=RATING_DEFAULT, null=False)
+    rating = models.SmallIntegerField(
+        choices=RATING, default=RATING_DEFAULT, null=False
+    )
 
     objects = RssNotificationManager()
 
     @staticmethod
     def compute_internal_id_hash(id):
-        return hashlib.md5(id.encode('utf-8')).hexdigest()
+        return hashlib.md5(id.encode("utf-8")).hexdigest()
 
     def evaluate_internal_id(self):
         if self.internal_id:
@@ -108,7 +121,7 @@ class RssNotification(models.Model):
         return False
 
     def __str__(self):
-        return '%s %s' % (self.title, self.published_parsed)
+        return "%s %s" % (self.title, self.published_parsed)
 
     class Meta:
-        ordering = ['-published_parsed']
+        ordering = ["-published_parsed"]

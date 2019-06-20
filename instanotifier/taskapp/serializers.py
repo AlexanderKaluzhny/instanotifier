@@ -11,7 +11,7 @@ class DateTimeIsoformat(datetime):
         Django forms.DateTimeField does not understand the u'2017-02-10T12:17:50' datetime format
     """
 
-    def isoformat(self, sep=' '):
+    def isoformat(self, sep=" "):
         """ calls the datetime.datetime.isoformat method with sep argument to be ' ' instead of 'T' """
         return super(DateTimeIsoformat, self).isoformat(sep)
 

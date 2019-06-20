@@ -10,7 +10,7 @@ class TestRssNotificationViews(TestCase):
 
     def setUp(self):
         self.feed_items = parser_utils.get_test_rss_feed_items()
-        assert(len(self.feed_items) > self.presaved_items_count)
+        assert len(self.feed_items) > self.presaved_items_count
 
         # presave some items
         for idx, item in zip(range(self.presaved_items_count), self.feed_items):
@@ -24,4 +24,6 @@ class TestRssNotificationViews(TestCase):
         self.assertTrue(len(saved_pks) > 0)
 
         # check that we did not save the already saved ones
-        self.assertTrue(len(saved_pks) == (len(self.feed_items) - self.presaved_items_count))
+        self.assertTrue(
+            len(saved_pks) == (len(self.feed_items) - self.presaved_items_count)
+        )

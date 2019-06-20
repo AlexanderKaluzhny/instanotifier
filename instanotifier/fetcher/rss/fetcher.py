@@ -1,5 +1,6 @@
 import feedparser
 
+
 class RssFetcher(object):
     # parser_class = RssParser
 

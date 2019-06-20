@@ -9,7 +9,7 @@ from instanotifier.feedsource.models import FeedSource
 
 @shared_task
 def initiate_fetching(feedsource_pk):
-    url = FeedSource.objects.values_list('url', flat=True).get(pk=feedsource_pk)
+    url = FeedSource.objects.values_list("url", flat=True).get(pk=feedsource_pk)
 
     # TODO: pass feedsource_pk into fetch
 

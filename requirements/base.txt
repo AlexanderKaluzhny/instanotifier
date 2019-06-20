@@ -2,6 +2,7 @@
 celery==4.3.0
 Django==2.2.2
 djangorestframework==3.9.4
+coreapi==2.3.3
 
 psycopg2-binary==2.7.6
 
@@ -25,6 +26,6 @@ feedparser==5.2.1
 
 html5lib==0.999999999
 
-django-filter==1.0.1
+django-filter==2.1.0
 
-django-bootstrap-pagination==1.6.2
+django-bootstrap-pagination==1.7.1

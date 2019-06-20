@@ -2,7 +2,6 @@ import hashlib
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_text, python_2_unicode_compatible
 
 from django.db.models.functions import Trunc
 from django.db.models import DateField, Count
@@ -44,7 +43,6 @@ class RssNotificationManager(models.Manager):
         return date_times
 
 
-@python_2_unicode_compatible
 class RssNotification(models.Model):
     RATING_DEFAULT = 0
     RATING_UPVOTED = 1

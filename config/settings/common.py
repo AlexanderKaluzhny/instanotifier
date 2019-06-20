@@ -8,8 +8,6 @@ https://docs.djangoproject.com/en/dev/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
-from __future__ import absolute_import, unicode_literals
-
 import environ
 
 from kombu.serialization import register
@@ -57,11 +55,12 @@ THIRD_PARTY_APPS = (
     'rest_framework',
 
     'crispy_forms',  # Form layouts
+    'django_filters',
+
     'allauth',  # registration
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
 
-    'django_celery_beat',
     'bootstrap_pagination',
 )
 

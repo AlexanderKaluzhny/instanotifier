@@ -1,6 +1,6 @@
 from test_plus.test import TestCase
 
-import instanotifier.parser.rss.utils as parser_utils
+import instanotifier.parser.rss.test_utils as parser_utils
 from instanotifier.notification import views
 from instanotifier.notification.forms import RssNotificationForm
 

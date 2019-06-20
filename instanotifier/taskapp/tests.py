@@ -3,8 +3,8 @@ from celery import chain
 from instanotifier.fetcher.tasks import fetch
 from instanotifier.parser.tasks import parse
 from instanotifier.publisher.tasks import publish
-from instanotifier.fetcher.rss.utils import _rss_file_path
-from instanotifier.notification.utils.feed import delete_test_rss_feed_notifications
+from instanotifier.fetcher.tests import _rss_file_path
+from instanotifier.notification.tests.utils import delete_test_rss_feed_notifications
 
 
 def test_consume_feed_task_chaining():

@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 
 from test_plus.test import TestCase
 
@@ -12,7 +12,6 @@ from instanotifier.publisher.email.publisher import RssNotificationEmailPublishe
 from instanotifier.publisher.tasks import publish
 
 from instanotifier.feedsource.models import FeedSource
-from django_celery_beat.models import IntervalSchedule
 
 from instanotifier.notification.utils.feed import delete_test_rss_feed_notifications
 
@@ -28,12 +27,9 @@ class TestFeedSourceAutoCleanupContext(object):
     def __enter__(self):
         delete_test_rss_feed_notifications()
 
-        self.interval = IntervalSchedule(every=180, period='days')
-        self.interval.save()
         self.feedsource = FeedSource(**dict(
             url='https://www.example.com/ab/feed/topics/rss?securityToken=2casdasdvuybf',
             email_to='sampleAAA@example.com',
-            interval=self.interval,
             enabled=False,
         ))
         self.feedsource.save()
@@ -44,8 +40,6 @@ class TestFeedSourceAutoCleanupContext(object):
         delete_test_rss_feed_notifications()
 
         self.feedsource.delete()
-        self.feedsource.periodic_task.delete()
-        self.interval.delete()
 
 
 class TestRssNotificationEmailPublisher(TestCase):
@@ -139,12 +133,12 @@ def test_consume_feed_task_chaining():
 
     with TestFeedSourceAutoCleanupContext() as context:
         original_notification_count = RssNotification.objects.count()
-        print 'Original notifications count: %s' % (original_notification_count)
+        print('Original notifications count: %s' % (original_notification_count)
 
         task_flow = chain(fetch.s(_rss_file_path()), parse.s(), publish.s(context.feedsource_pk))
         task_flow.delay().get()
 
         actual_notification_count = RssNotification.objects.count()
-        print 'Actual notifications count: %s' % (actual_notification_count)
+        print('Actual notifications count: %s' % (actual_notification_count))
 
         assert (actual_notification_count > original_notification_count)

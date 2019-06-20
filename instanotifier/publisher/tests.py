@@ -13,12 +13,13 @@ from instanotifier.publisher.tasks import publish
 
 from instanotifier.feedsource.models import FeedSource
 
-from instanotifier.notification.utils.feed import delete_test_rss_feed_notifications
+from instanotifier.notification.tests.utils import delete_test_rss_feed_notifications
 
 
 class TestFeedSourceAutoCleanupContext(object):
-    """ A context manager that creates the disabled FeedSource instance with all the related fields and
-        cleanup everything on exit.
+    """
+    A context manager that creates the disabled FeedSource instance with all the related fields and
+    cleanup everything on exit.
     """
 
     def __init__(self):
@@ -119,23 +120,28 @@ class TestPublishTask(TestCase):
 
 
 def test_consume_feed_task_chaining():
-    """ Consume test rss feed through connected fetcher and parser and publisher tasks.
-        Make sure the parser have created the RssNotification instances, and
-        all the messages were sent.
+    """
+    It should be run from under the shell/script.
 
-        It should be run from under the shell/script.
+    Consumes test rss feed through connected fetcher and parser and publisher tasks.
+    Make sure the parser have created the RssNotification instances, and
+    all the messages were sent.
     """
 
     from celery import chain
     from instanotifier.fetcher.tasks import fetch
     from instanotifier.parser.tasks import parse
-    from instanotifier.fetcher.rss.utils import _rss_file_path
+    from instanotifier.fetcher.tests import _rss_file_path
 
     with TestFeedSourceAutoCleanupContext() as context:
         original_notification_count = RssNotification.objects.count()
-        print('Original notifications count: %s' % (original_notification_count)
+        print('Original notifications count: %s' % (original_notification_count))
 
-        task_flow = chain(fetch.s(_rss_file_path()), parse.s(), publish.s(context.feedsource_pk))
+        task_flow = chain(
+            fetch.s(_rss_file_path()),
+            parse.s(),
+            publish.s(context.feedsource_pk)
+        )
         task_flow.delay().get()
 
         actual_notification_count = RssNotification.objects.count()

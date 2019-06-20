@@ -34,7 +34,7 @@ class RssNotificationEmailPublisher(object):
             #               fail_silently=False, html_message=rendered_notification)
             send_mail(
                 "%s%s" % (settings.EMAIL_SUBJECT_PREFIX, notification.title),
-                u"{}".format(""),
+                "{}".format(""),
                 from_email=settings.SERVER_EMAIL,
                 recipient_list=[self.email_to],
                 fail_silently=False,

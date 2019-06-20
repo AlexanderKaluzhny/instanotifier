@@ -8,20 +8,20 @@ from instanotifier.notification.models import RssNotification
 class TestRssNotification(TestCase):
     def setUp(self):
         self.test_data = {
-            u"entry_id": u"https://www.example.com/e88eb1cdaeeae6?source=rss",
-            u"link": u"https://www.example.com/e88eb1cdaeeae6?source=rss",
-            u"published_parsed": u"2017-02-10 12:17:50",
-            u"summary": u'<a href="javascript: routine();">Click here for $100</a>',  # => <a>Click here for $100</a>
-            u"title": u"Sample rss feed entry",
+            "entry_id": "https://www.example.com/e88eb1cdaeeae6?source=rss",
+            "link": "https://www.example.com/e88eb1cdaeeae6?source=rss",
+            "published_parsed": "2017-02-10 12:17:50",
+            "summary": u'<a href="javascript: routine();">Click here for $100</a>',  # => <a>Click here for $100</a>
+            "title": "Sample rss feed entry",
         }
 
     def test_model_required_fields(self):
         feed_item_data = {
-            u"entry_id": u"",
-            u"link": u"",
-            u"published_parsed": u"",
-            u"summary": u"",
-            u"title": u"",
+            "entry_id": u"",
+            "link": u"",
+            "published_parsed": u"",
+            "summary": u"",
+            "title": u"",
         }
 
         notification = RssNotification(**feed_item_data)
@@ -38,11 +38,11 @@ class TestRssNotification(TestCase):
         """ make sure the summary field is sanitized on save()"""
         notification = RssNotification(**self.test_data)
         notification.save()
-        self.assertEqual(notification.summary, u"<a>Click here for $100</a>")
-        notification.summary = u"<script> do_bad_stuff() </script>"
+        self.assertEqual(notification.summary, "<a>Click here for $100</a>")
+        notification.summary = "<script> do_bad_stuff() </script>"
         notification.save()
         self.assertEqual(
-            notification.summary, u"&lt;script&gt; do_bad_stuff() &lt;/script&gt;"
+            notification.summary, "&lt;script&gt; do_bad_stuff() &lt;/script&gt;"
         )
 
     def test_evaluate_internal_id_on_save(self):
@@ -51,16 +51,5 @@ class TestRssNotification(TestCase):
         notification = RssNotification(**self.test_data)
         notification.save()
 
-        hash = notification.compute_internal_id_hash(notification.entry_id)
+        hash = notification.compute_entry_id_hash(notification.entry_id)
         self.assertEqual(hash, notification.internal_id)
-
-    def test_check_existing(self):
-        notification = RssNotification(**self.test_data)
-        notification.save()
-
-        notification2 = RssNotification(**self.test_data)
-        self.assertTrue(len(notification2.internal_id) == 0)
-        exists = notification2.check_existing()
-        self.assertTrue(exists)
-        # make sure RssNotification.check_existing evaluates internal_id field
-        self.assertTrue(len(notification2.internal_id) > 0)

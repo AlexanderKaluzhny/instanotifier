@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 
 def filter_feed_by_fields(feed, fields):
     feed_keys = feed.keys()

@@ -2,17 +2,18 @@ from test_plus.test import TestCase
 
 from django.test.utils import override_settings
 
-from instanotifier.parser.rss import utils
 from instanotifier.parser.rss.parser import RssParser
 from instanotifier.parser.rss.parser import RSS_FEED_INFO_FIELDS, RSS_FEED_ENTRY_FIELDS
+from instanotifier.parser.main import parse
 
-from instanotifier.parser import tasks
+from instanotifier.parser.rss.test_utils import get_test_rss_feed
+
 from instanotifier.notification.models import RssNotification
 
 
 class TestRssParser(TestCase):
     def setUp(self):
-        self.raw_feed, _ = utils.get_test_rss_feed()
+        self.raw_feed, _ = get_test_rss_feed()
 
     def test_parse_feed_info(self):
         parser = RssParser(self.raw_feed)
@@ -44,18 +45,14 @@ class TestRssParser(TestCase):
 
 class TestParserTask(TestCase):
     def setUp(self):
-        self.raw_feed, parser = utils.get_test_rss_feed()
-        # NOTE: if run in task_eager mode, the self.raw_feed is not serialized by the timeawareserializer,
-        # so the RssNotification form will not be valid.
-
+        self.raw_feed, parser = get_test_rss_feed()
         self.feed_items = parser.parse_feed_items(self.raw_feed)
 
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_instances_save(self):
         self.assertTrue(RssNotification.objects.count() == 0)
 
         # make sure the parser saves the instances
-        saved_pks = tasks.parse(self.raw_feed)  # .delay(self.feed).get()
+        saved_pks = parse(self.raw_feed)
 
         expected_items_count = len(self.feed_items)
         actual_instances_saved_count = RssNotification.objects.count()
@@ -63,30 +60,3 @@ class TestParserTask(TestCase):
         self.assertEqual(len(saved_pks), expected_items_count)
         self.assertEqual(len(saved_pks), actual_instances_saved_count)
 
-
-def test_consume_feed():
-    """
-    It should be run from under the shell/script.
-
-    Consume test rss feed through connected fetcher and parser tasks.
-    And make sure the parser have created the RssNotification instances.
-    """
-
-    from celery import chain
-    from instanotifier.fetcher.tasks import fetch
-    from instanotifier.fetcher.tests import _rss_file_path
-
-    original_notification_count = RssNotification.objects.count()
-    print('Original notifications count: %s' % (original_notification_count))
-
-    task_flow = chain(
-        fetch.s(_rss_file_path()),
-        tasks.parse.s()
-    )
-    saved_pks = task_flow.delay().get()
-
-    actual_notification_count = RssNotification.objects.count()
-    print('Actual notifications count: %s' % (actual_notification_count))
-
-    print('Number of saved notifications: %s' % (len(saved_pks)))
-    assert (len(saved_pks) == actual_notification_count - original_notification_count)

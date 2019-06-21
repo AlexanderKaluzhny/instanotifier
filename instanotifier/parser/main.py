@@ -1,11 +1,7 @@
-from celery import shared_task
-from instanotifier.taskapp.celery import LogErrorsTask
-
 from instanotifier.parser.rss.parser import RssParser
 from instanotifier.notification.views import create_rssnotification_instances
 
 
-@shared_task(base=LogErrorsTask)
 def parse(feed):
     parser = RssParser(feed)
     feed_info, feed_items = parser.parse()

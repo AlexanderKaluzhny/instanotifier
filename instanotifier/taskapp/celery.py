@@ -1,5 +1,10 @@
 import os
-from celery import Celery
+import logging
+import stackprinter
+
+from celery import Celery, Task
+from celery.schedules import crontab
+
 from django.apps import apps, AppConfig
 from django.conf import settings
 
@@ -22,6 +27,21 @@ class CeleryConfig(AppConfig):
         app.config_from_object("django.conf:settings", namespace="CELERY")
         installed_apps = [app_config.name for app_config in apps.get_app_configs()]
         app.autodiscover_tasks(lambda: installed_apps, force=True)
+
+
+app.conf.beat_schedule = {
+    'fetch_all_sources_daily': {
+        'task': 'instanotifier.feedsource.tasks.fetch_all_sources',
+        'schedule': crontab(minute=00, hour=[9]),
+    },
+}
+
+
+class LogErrorsTask(Task):
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        tb = stackprinter.format(exc)
+        logging.error(tb)
+        super().on_failure(exc, task_id, args, kwargs, einfo)
 
 
 @app.task(bind=True)

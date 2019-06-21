@@ -117,34 +117,3 @@ class TestPublishTask(TestCase):
     def test_publish_task(self, publish_method_mock):
         publish.delay(self.saved_pks, self.feedsource.pk).get()
         publish_method_mock.assert_called()
-
-
-def test_consume_feed_task_chaining():
-    """
-    It should be run from under the shell/script.
-
-    Consumes test rss feed through connected fetcher and parser and publisher tasks.
-    Make sure the parser have created the RssNotification instances, and
-    all the messages were sent.
-    """
-
-    from celery import chain
-    from instanotifier.fetcher.tasks import fetch
-    from instanotifier.parser.tasks import parse
-    from instanotifier.fetcher.tests import _rss_file_path
-
-    with TestFeedSourceAutoCleanupContext() as context:
-        original_notification_count = RssNotification.objects.count()
-        print('Original notifications count: %s' % (original_notification_count))
-
-        task_flow = chain(
-            fetch.s(_rss_file_path()),
-            parse.s(),
-            publish.s(context.feedsource_pk)
-        )
-        task_flow.delay().get()
-
-        actual_notification_count = RssNotification.objects.count()
-        print('Actual notifications count: %s' % (actual_notification_count))
-
-        assert (actual_notification_count > original_notification_count)

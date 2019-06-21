@@ -10,14 +10,8 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 import environ
 
-from kombu.serialization import register
-from instanotifier.taskapp.serializers import dumps, loads
-
-
 ROOT_DIR = environ.Path(__file__) - 3  # (instanotifier/config/settings/common.py - 3 = instanotifier/)
 APPS_DIR = ROOT_DIR.path('instanotifier')
-
-env = environ.Env()
 
 # Load operating system environment variables and then prepare to use them
 env = environ.Env()
@@ -281,15 +275,9 @@ if CELERY_BROKER_URL == 'django://':
 else:
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
-# Register custom serializer methods with kombu to be able to serialize time entries
-register('timeawarejsonserializer', dumps, loads,
-    content_type='application/json',
-    content_encoding='utf-8')
-
-CELERY_ACCEPT_CONTENT = ['json', 'timeawarejsonserializer']
-CELERY_RESULT_SERIALIZER = 'timeawarejsonserializer'
-CELERY_TASK_SERIALIZER = 'timeawarejsonserializer'
-
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 ########## END CELERY
 
 

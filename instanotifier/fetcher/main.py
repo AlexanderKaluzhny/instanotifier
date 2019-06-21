@@ -2,11 +2,7 @@ from celery import shared_task
 from instanotifier.fetcher.rss.fetcher import RssFetcher, fetch_rss_feed
 
 
-@shared_task
-def fetch(url, source_id=None):
-    # Fetcher <-> Source Settings Model
-    # Fetcher < - JSON - > Parser
-
+def fetch(url):
     # TODO: Determining that a feed is password-protected
     # TODO: if source_id:
     #   specify the Etag and Last-Modified values.

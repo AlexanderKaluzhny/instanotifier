@@ -37,10 +37,12 @@ class TestRssParser(TestCase):
             self.assertEqual(sorted(RSS_FEED_ENTRY_FIELDS), sorted(item.keys()))
 
             for key, value in item.items():
-                # items order should be preserved
+                # feed entries order should be preserved
                 # and item content should be equal to the original feed
                 original_feed_entry = self.raw_feed['entries'][idx]
-                self.assertTrue(value is original_feed_entry[key])
+                parser._sanitize_published_parsed(original_feed_entry)
+
+                self.assertTrue(value == original_feed_entry[key])
 
 
 class TestParserTask(TestCase):

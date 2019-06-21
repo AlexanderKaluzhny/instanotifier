@@ -123,12 +123,6 @@ class NotificationDatesListView(ListAPIView):
     renderer_classes = (TemplateHTMLRendererBase, JSONRenderer)
     serializer_class = RssNotificationDateSerializer
 
-    def get_serializer(self, *args, **kwargs):
-        serializer = super(NotificationDatesListView, self).get_serializer(
-            *args, **kwargs
-        )
-        return serializer
-
     def get_queryset(self):
         """
         Returns the queryset containing entries having the date field only.

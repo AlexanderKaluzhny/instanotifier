@@ -1,5 +1,5 @@
 
-def filter_feed_by_fields(feed, fields):
+def filter_feeditem_fields(feed, fields):
     feed_keys = feed.keys()
     if not len(feed_keys):
         raise ValueError("Empty feed specified.")

@@ -36,9 +36,12 @@ class TestRssNotificationDateSerializer(TestCase):
         self.dates = RssNotification.objects.dates("published_parsed", "day")
 
     def test_date_serializer(self):
-        data = {"published_parsed_date": self.dates[0]}
+        data = dict(
+            published_parsed_date=self.dates[0],
+            dates_count=1,
+        )
         serializer = RssNotificationDateSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
+        self.assertTrue(serializer.is_valid(raise_exception=True))
         self.assertEqual(
             serializer.data["published_parsed_date"], str(data["published_parsed_date"])
         )

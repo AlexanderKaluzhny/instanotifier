@@ -13,7 +13,7 @@ class RssNotificationSerializer(serializers.ModelSerializer):
 
 
 class RssNotificationDateSerializer(serializers.Serializer):
-    """ Serializer for separating the RssNotifications' published_parsed dates"""
+    """ Serializer for rendering of the RssNotifications' published_parsed dates"""
 
     published_parsed_date = serializers.DateField(
         format=RSSNOTIFICATION_DATE_OUTPUT_FORMAT

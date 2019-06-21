@@ -26,10 +26,6 @@ class TestNotificationListViewFiltering(TestCase):
     def test_date_filtered_is_in_response(self):
         """ Make sure the response contains the date filtered by """
 
-        import pudb
-
-        pudb.set_trace()
-
         filtering_data = {"published_parsed__date": self.dates[0]}
 
         request = factory.get("/", data=filtering_data, content_type="application/json")
@@ -38,7 +34,7 @@ class TestNotificationListViewFiltering(TestCase):
         expected = '<span id="filter_date_used" data-date="{}"></span>'.format(
             self.dates[0]
         )
-        self.assertTrue(expected in response.rendered_content)
+        self.assertTrue(expected in response.rendered_content.decode())
 
     def test_date_filtered_empty_is_in_response(self):
         filtering_data = {"published_parsed__date": ""}
@@ -47,4 +43,4 @@ class TestNotificationListViewFiltering(TestCase):
         response = self.view(request)
 
         expected = '<span id="filter_date_used" data-date=""></span>'
-        self.assertTrue(expected in response.rendered_content)
+        self.assertTrue(expected in response.rendered_content.decode())

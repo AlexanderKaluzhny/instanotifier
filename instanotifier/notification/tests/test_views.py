@@ -1,11 +1,12 @@
 from test_plus.test import TestCase
+from django.test.testcases import TransactionTestCase
 
 import instanotifier.parser.rss.test_utils as parser_utils
 from instanotifier.notification import views
 from instanotifier.notification.forms import RssNotificationForm
 
 
-class TestRssNotificationViews(TestCase):
+class TestRssNotificationViews(TransactionTestCase):
     presaved_items_count = 5
 
     def setUp(self):
@@ -19,8 +20,8 @@ class TestRssNotificationViews(TestCase):
 
     def test_create_rssnotification_instances(self):
         """ make sure the items are saved excluding the already existing ones """
-
         saved_pks = views.create_rssnotification_instances(self.feed_items)
+
         self.assertTrue(len(saved_pks) > 0)
 
         # check that we did not save the already saved ones

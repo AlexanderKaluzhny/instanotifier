@@ -28,11 +28,15 @@ class RssParser(object):
         if not feed:
             raise ValueError("Empty info feed specified")
 
-        feed_info = utils.filter_feed_by_fields(feed, RSS_FEED_INFO_FIELDS)
+        feed_info = utils.filter_feeditem_fields(feed, RSS_FEED_INFO_FIELDS)
 
         return feed_info
 
-    def _sanitize_published_parsed(self, feed_item):
+    @classmethod
+    def _sanitize_published_parsed(cls, feed_item):
+        """
+        Converts the `published_parsed` field value from time.struct_time to datetime.
+        """
         from datetime import datetime
         from time import mktime, struct_time
 
@@ -47,7 +51,7 @@ class RssParser(object):
 
         feed_items = list()
         for entry in feed_entries:
-            item = utils.filter_feed_by_fields(entry, RSS_FEED_ENTRY_FIELDS)
+            item = utils.filter_feeditem_fields(entry, RSS_FEED_ENTRY_FIELDS)
             self._sanitize_published_parsed(item)
             feed_items.append(item)
 

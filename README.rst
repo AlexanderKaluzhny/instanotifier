@@ -9,6 +9,8 @@ Includes API based UI listing all the saved entries. UI allows rating, searching
      :alt: Built with Cookiecutter Django
 
 
+:Python: 3.7
+:Django: 2.2
 :License: MIT
 
 
@@ -40,9 +42,7 @@ Implemented functionality
 
 * Modular architecture
 * RssFetcher → RssParser → RssNotification model → Email publisher
-* Running fetcher, parser, publisher in separate tasks
 * FeedSource settings application
-* Automatic setting of periodic tasks according to the FeedSource settings through Celery Beat
 * Using of FeedSource instance data in the RssFetcher and Email publisher
 * Tests
 * User registration, integration with Mailgun (out of box from the cookiecutter project template)
@@ -58,6 +58,8 @@ Implemented functionality
 Possible features to be added
 -----------------------------
 
+* Make a relation of RssNotification to the particular user.
+* Showing only user-owned content.
 * Allow sending of emails to the verified user email only
 * Run Celery tasks in separate queues
 * Send logs to log aggregator
@@ -69,13 +71,6 @@ Possible features to be added
 * [Implemented] Expose access to saved entries through REST API
 * Use non-blocking I/O for fetching of RSS
 
-
-Settings
---------
-
-Moved to settings_.
-
-.. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
 
 Basic Commands
 --------------
@@ -91,21 +86,25 @@ Setting Up Your Users
 
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
 
-Test coverage
-^^^^^^^^^^^^^
 
-To run the tests, check your test coverage, and generate an HTML coverage report::
+Celery
+^^^^^^
 
-    $ coverage run manage.py test
-    $ coverage html
-    $ open htmlcov/index.html
+To run celery:
 
-Running tests with py.test
+.. code-block:: bash
+
+    cd instanotifier
+    celery -A instanotifier.taskapp worker -B -l info
+
+
+Running tests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
-  $ py.test
+  $ ./manage.py test
+
 
 Live reloading and Sass CSS compilation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -113,22 +112,6 @@ Live reloading and Sass CSS compilation
 Moved to `Live reloading and SASS compilation`_.
 
 .. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
-
-
-
-Celery
-^^^^^^
-
-This app comes with Celery.
-
-To run a celery worker:
-
-.. code-block:: bash
-
-    cd instanotifier
-    celery -A instanotifier.taskapp worker -l info
-
-Please note: For Celery's import magic to work, it is important *where* the celery commands are run. If you are in the same folder with *manage.py*, you should be right.
 
 
 
@@ -154,6 +137,20 @@ Deployment
 The following details how to deploy this application.
 
 
+Starting up with `tmuxinator` locally
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Just use the ``tmuxinator-inr.yml`` script provided.
+
+
+VPS Server using Ansible and Fabric
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Scripts are located `in this repository`_.
+
+.. _`in this repository`: https://github.com/AlexanderKaluzhny/deployment-scripts
+
+
 Heroku
 ^^^^^^
 
@@ -171,20 +168,9 @@ See detailed `cookiecutter-django Docker documentation`_.
 .. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 
 
-VPS Server using Ansible and Fabric
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Settings
+--------
 
-Scripts are located `in this repository`_.
+Moved to settings_.
 
-.. _`in this repository`: https://github.com/AlexanderKaluzhny/deployment-scripts
-
-
-Patching Celery Beat
-^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: bash
-
-    cd instanotifier/utility
-    ./apply_celery_patch.sh <path to virtualenv>
-
-It will copy the requirements/celery_beat_tick.patch and apply it.
+.. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html

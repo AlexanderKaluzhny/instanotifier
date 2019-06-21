@@ -5,4 +5,9 @@ from instanotifier.notification.models import RssNotification
 
 @admin.register(RssNotification)
 class RssNotificaionAdmin(admin.ModelAdmin):
-    pass
+    list_display = [
+        'title',
+        'published_parsed',
+        'created_on',
+    ]
+

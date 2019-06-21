@@ -89,10 +89,10 @@ class RssNotification(models.Model):
     link = models.URLField(_("Link"), blank=False)
     published_parsed = models.DateTimeField(_("Published"))
     entry_id = models.CharField(_("Rss entry id"), max_length=2083, blank=False)
-
     rating = models.SmallIntegerField(
         choices=Ratings.as_choices(), default=Ratings.DEFAULT, null=False
     )
+    created_on = models.DateTimeField("Created on", auto_now_add=True)
 
     objects = RssNotificationQuerySet.as_manager()
 

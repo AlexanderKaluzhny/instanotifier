@@ -21,7 +21,7 @@ from instanotifier.api.serializers import (
     RssNotificationDateSerializer,
 )
 from instanotifier.api.notification.rating import RatingManager
-from instanotifier.notification.models import RssNotification
+from instanotifier.notification.models import RssNotification, Ratings
 
 
 class TemplateHTMLRendererBase(TemplateHTMLRenderer):
@@ -130,8 +130,9 @@ class NotificationDatesListView(ListAPIView):
         return serializer
 
     def get_queryset(self):
-        """ Returns the queryset containing entries having the date field only.
-            Date is a trunc of a published_parsed datetime field.
+        """
+        Returns the queryset containing entries having the date field only.
+        Date is a trunc of a published_parsed datetime field.
         """
 
         date_times = RssNotification.objects.get_dates_only()
@@ -161,7 +162,7 @@ class NotificationVotingView(GenericAPIView):
         if rating is None:
             raise ValidationError("The 'rating' parameter was not specified.")
 
-        rating_value = RssNotification.RATINGS.get(rating, None)
+        rating_value = Ratings.get_value_or_none(rating)
         if rating_value is None:
             raise ValidationError("The 'rating' parameter was incorrectly specified.")
 

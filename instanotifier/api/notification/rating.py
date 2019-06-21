@@ -1,5 +1,4 @@
 from django.utils.functional import cached_property
-from instanotifier.notification.models import queryset_exclude_downvoted
 
 
 class CheckboxExcludeDownvotedNotification(object):
@@ -79,6 +78,6 @@ class RatingManager(object):
             self.checkbox.set_checked(False, view)
             return queryset
 
-        queryset = queryset_exclude_downvoted(queryset)
+        queryset = queryset.not_downvoted()
         self.checkbox.set_checked(True, view)
         return queryset

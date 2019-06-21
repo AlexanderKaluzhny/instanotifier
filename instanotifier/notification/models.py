@@ -20,14 +20,40 @@ RSS_FEED_ENTRY_FIELDS = [
 """
 
 
-def queryset_exclude_downvoted(qs):
-    return qs.exclude(rating=-1)
+class Ratings(object):
+    DEFAULT = 0
+    UPVOTED = 1
+    DOWNVOTED = -1
+
+    DEFAULT_READABLE = "default"
+    UPVOTED_READABLE = "upvoted"
+    DOWNVOTED_READABLE = "downvoted"
+
+    @classmethod
+    def as_choices(cls):
+        return (
+            (cls.DEFAULT, cls.DEFAULT_READABLE),
+            (cls.UPVOTED, cls.UPVOTED_READABLE),
+            (cls.DOWNVOTED, cls.DOWNVOTED_READABLE),
+        )
+
+    @classmethod
+    def as_readables_dict(cls):
+        return {v:k for k, v in cls.as_choices()}
+
+    @classmethod
+    def get_value_or_none(self, readable):
+        return self.as_readables_dict().get(readable, None)
 
 
-class RssNotificationManager(models.Manager):
+class RssNotificationQuerySet(models.QuerySet):
+    def not_downvoted(self):
+        return self.exclude(rating=Ratings.DOWNVOTED)
+
     def get_dates_only(self):
-        """ Returns the queryset containing entries having the date field only.
-            Date is a trunc of a published_parsed datetime field.
+        """
+        Returns the queryset containing entries having the date field only.
+        Date is a trunc of a published_parsed datetime field.
         """
 
         # NOTE: order_by influences the distinct() results here
@@ -49,30 +75,11 @@ class RssNotificationManager(models.Manager):
 
 
 class RssNotification(models.Model):
-    RATING_DEFAULT = 0
-    RATING_UPVOTED = 1
-    RATING_DOWNVOTED = -1
-
-    RATING_DEFAULT_READABLE = "default"
-    RATING_UPVOTED_READABLE = "upvoted"
-    RATING_DOWNVOTED_READABLE = "downvoted"
-
-    RATING = (
-        (RATING_DEFAULT, RATING_DEFAULT_READABLE),
-        (RATING_UPVOTED, RATING_UPVOTED_READABLE),
-        (RATING_DOWNVOTED, RATING_DOWNVOTED_READABLE),
-    )
-
-    RATINGS = {
-        RATING_DEFAULT_READABLE: RATING_DEFAULT,
-        RATING_UPVOTED_READABLE: RATING_UPVOTED,
-        RATING_DOWNVOTED_READABLE: RATING_DOWNVOTED,
-    }
-
     internal_id = models.CharField(
         _("Internal entry id"),
         max_length=255,
         db_index=True,
+        unique=True,
         blank=False,
         editable=False,
     )
@@ -84,24 +91,29 @@ class RssNotification(models.Model):
     entry_id = models.CharField(_("Rss entry id"), max_length=2083, blank=False)
 
     rating = models.SmallIntegerField(
-        choices=RATING, default=RATING_DEFAULT, null=False
+        choices=Ratings.as_choices(), default=Ratings.DEFAULT, null=False
     )
 
-    objects = RssNotificationManager()
+    objects = RssNotificationQuerySet.as_manager()
 
-    @staticmethod
-    def compute_internal_id_hash(id):
-        return hashlib.md5(id.encode("utf-8")).hexdigest()
+    class Meta:
+        ordering = ["-published_parsed"]
+
+    def __str__(self):
+        return "%s %s" % (self.title, self.published_parsed)
+
+    @classmethod
+    def compute_entry_id_hash(cls, entry_id):
+        return hashlib.md5(entry_id.encode("utf-8")).hexdigest()
 
     def evaluate_internal_id(self):
         if self.internal_id:
             return self.internal_id
 
-        id = self.entry_id
-        if not id:
-            raise ValueError("Id is not specified.")
+        if not self.entry_id:
+            raise ValueError("Entry_id is not specified.")
 
-        self.internal_id = self.compute_internal_id_hash(id)
+        self.internal_id = self.compute_entry_id_hash(self.entry_id)
         return self.internal_id
 
     def save(self, *args, **kwargs):
@@ -109,19 +121,4 @@ class RssNotification(models.Model):
 
         self.summary = html.clean_html(self.summary)
 
-        super(RssNotification, self).save(*args, **kwargs)
-
-    def check_existing(self):
-        self.evaluate_internal_id()
-
-        qs = RssNotification.objects.filter(internal_id=self.internal_id)
-        if qs.exists():
-            return True
-
-        return False
-
-    def __str__(self):
-        return "%s %s" % (self.title, self.published_parsed)
-
-    class Meta:
-        ordering = ["-published_parsed"]
+        super().save(*args, **kwargs)

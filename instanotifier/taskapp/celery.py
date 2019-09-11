@@ -30,10 +30,10 @@ class CeleryConfig(AppConfig):
 
 
 app.conf.beat_schedule = {
-    'fetch_all_sources_daily': {
-        'task': 'instanotifier.feedsource.tasks.fetch_all_sources',
-        'schedule': crontab(minute=00, hour=[9]),
-    },
+    "fetch_all_sources_daily": {
+        "task": "instanotifier.feedsource.tasks.fetch_all_sources",
+        "schedule": crontab(minute=00, hour=[11, 23]),
+    }
 }
 
 

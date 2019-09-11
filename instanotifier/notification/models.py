@@ -39,7 +39,7 @@ class Ratings(object):
 
     @classmethod
     def as_readables_dict(cls):
-        return {v:k for k, v in cls.as_choices()}
+        return {v: k for k, v in cls.as_choices()}
 
     @classmethod
     def get_value_or_none(self, readable):
@@ -80,17 +80,21 @@ class RssNotification(models.Model):
         max_length=255,
         db_index=True,
         unique=True,
-        blank=False,
         editable=False,
     )
-
-    title = models.CharField(_("Title"), max_length=255, blank=False)
+    feed_source = models.ForeignKey(
+        "feedsource.FeedSource",
+        on_delete=models.SET_NULL,
+        related_name="rss_notifications",
+        null=True,
+    )
+    title = models.CharField(_("Title"), max_length=255)
     summary = models.TextField(_("Summary"), blank=True)
-    link = models.URLField(_("Link"), blank=False)
+    link = models.URLField(_("Link"), max_length=2083)
     published_parsed = models.DateTimeField(_("Published"))
-    entry_id = models.CharField(_("Rss entry id"), max_length=2083, blank=False)
+    entry_id = models.CharField(_("Rss entry id"), max_length=2083)
     rating = models.SmallIntegerField(
-        choices=Ratings.as_choices(), default=Ratings.DEFAULT, null=False
+        choices=Ratings.as_choices(), default=Ratings.DEFAULT
     )
     created_on = models.DateTimeField("Created on", auto_now_add=True)
 

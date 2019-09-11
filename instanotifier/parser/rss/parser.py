@@ -40,9 +40,9 @@ class RssParser(object):
         from datetime import datetime
         from time import mktime, struct_time
 
-        value = feed_item.get('published_parsed', None)
+        value = feed_item.get("published_parsed", None)
         if value and isinstance(value, struct_time):
-            feed_item['published_parsed'] = datetime.fromtimestamp(mktime(value))
+            feed_item["published_parsed"] = datetime.fromtimestamp(mktime(value))
 
     def parse_feed_items(self, feed):
         feed_entries = feed.get(self.feed_entries_key, None)

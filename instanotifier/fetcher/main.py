@@ -1,5 +1,4 @@
-from celery import shared_task
-from instanotifier.fetcher.rss.fetcher import RssFetcher, fetch_rss_feed
+from instanotifier.fetcher.rss.fetcher import fetch_rss_feed
 
 
 def fetch(url):

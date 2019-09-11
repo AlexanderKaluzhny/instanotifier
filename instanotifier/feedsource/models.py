@@ -1,13 +1,21 @@
 from django.db import models
 
 
+class FeedSourceQuerySet(models.QuerySet):
+    def enabled(self):
+        return self.filter(enabled=True)
+
+
 class FeedSource(models.Model):
-    url = models.URLField(blank=False)
-    email_to = models.CharField(max_length=255, blank=False)
-    enabled = models.BooleanField(default=True, blank=False)
+    name = models.CharField(max_length=64)
+    url = models.URLField(max_length=2083)
+    email_to = models.CharField(max_length=255)
+    enabled = models.BooleanField(default=True)
 
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    objects = FeedSourceQuerySet.as_manager()
+
     def __str__(self):
-        return "%s - %s" % (self.url[:40], self.email_to[:40])
+        return f"{self.name} - {self.email_to[:40]}"

@@ -6,7 +6,9 @@ from django.core import mail
 from django.test.utils import override_settings
 
 from instanotifier.notification.models import RssNotification
-from instanotifier.notification.tests.utils import create_rssnotifications_from_test_feed
+from instanotifier.notification.tests.utils import (
+    create_rssnotifications_from_test_feed,
+)
 
 from instanotifier.publisher.email.publisher import RssNotificationEmailPublisher
 from instanotifier.publisher.tasks import publish
@@ -28,11 +30,13 @@ class TestFeedSourceAutoCleanupContext(object):
     def __enter__(self):
         delete_test_rss_feed_notifications()
 
-        self.feedsource = FeedSource(**dict(
-            url='https://www.example.com/ab/feed/topics/rss?securityToken=2casdasdvuybf',
-            email_to='sampleAAA@example.com',
-            enabled=False,
-        ))
+        self.feedsource = FeedSource(
+            **dict(
+                url="https://www.example.com/ab/feed/topics/rss?securityToken=2casdasdvuybf",
+                email_to="sampleAAA@example.com",
+                enabled=False,
+            )
+        )
         self.feedsource.save()
         self.feedsource_pk = self.feedsource.pk
         return self
@@ -67,7 +71,7 @@ class TestRssNotificationEmailPublisher(TestCase):
 
         self.assertIn(notification.title, rendered_content)
 
-    @override_settings(EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend')
+    @override_settings(EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend")
     def test_send_email_mailhog(self):
         """ sends email using the smtp email backend to be received in the mailhog """
 
@@ -107,12 +111,12 @@ class TestPublishTask(TestCase):
         self.feedsource = self._feedsource_test_context.feedsource
 
         self.saved_pks = create_rssnotifications_from_test_feed()
-        assert (len(self.saved_pks) > 0)
+        assert len(self.saved_pks) > 0
 
     def tearDown(self):
         self._feedsource_test_context.__exit__(exc=None, value=None, tb=None)
 
-    @mock.patch('instanotifier.publisher.tasks.RssNotificationEmailPublisher.publish')
+    @mock.patch("instanotifier.publisher.tasks.RssNotificationEmailPublisher.publish")
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_publish_task(self, publish_method_mock):
         publish.delay(self.saved_pks, self.feedsource.pk).get()

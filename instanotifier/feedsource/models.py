@@ -12,6 +12,8 @@ class FeedSource(models.Model):
     email_to = models.CharField(max_length=255)
     enabled = models.BooleanField(default=True)
 
+    notes = models.TextField(blank=True, null=True)
+
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 

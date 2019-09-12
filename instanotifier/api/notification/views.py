@@ -78,7 +78,7 @@ class ListViewTemplateRenderer(TemplateHTMLRendererBase, BrowsableAPIRenderer):
 
 
 class PaginationSettings(PageNumberPagination):
-    page_size = 10
+    page_size = 50
 
 
 class NotificationListView(ListAPIView):
@@ -89,7 +89,6 @@ class NotificationListView(ListAPIView):
     renderer_classes = (ListViewTemplateRenderer, JSONRenderer, BrowsableAPIRenderer)
 
     pagination_class = PaginationSettings
-    # permission_classes =
     filter_backends = (filters.SearchFilter, DjangoFilterBackend)
     search_fields = ["title", "summary"]
     filter_fields = {
@@ -125,11 +124,9 @@ class NotificationDatesListView(ListAPIView):
 
     def get_queryset(self):
         """
-        Returns the queryset containing entries having the date field only.
-        Date is a trunc of a published_parsed datetime field.
+        Returns the queryset containing entries having the date and rating stats fields.
         """
-
-        date_times = RssNotification.objects.get_dates_only()
+        date_times = RssNotification.objects.get_dates_stats()
         return date_times
 
 

@@ -52,7 +52,10 @@
                   <div class="col-md-10">
                     <a role="button" data-toggle="collapse" data-parent="#accordion" href="#notification-data-{{ forloop.counter }}" aria-expanded="false" aria-controls="notification-data-{{ forloop.counter }}">
                       {{ notification.title }}
-                      </p>{{ notification.published_parsed }}
+                      <span class="label label-info">{{ notification.country }}</span>
+                      </p>
+                      <span>{{ notification.published_parsed }}</span>
+                      <span class="label label-default">{{ notification.source_name }}</span>
                     </a>
                   </div>
                   <div class="col-md-2">

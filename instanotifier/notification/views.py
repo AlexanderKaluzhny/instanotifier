@@ -7,6 +7,8 @@ from django.db.utils import IntegrityError
 from instanotifier.notification.forms import RssNotificationForm
 from instanotifier.notification.models import RssNotification
 
+logger = logging.getLogger('general_file')
+
 
 def create_rssnotification_instances(feed_items, feed_source=None):
     saved_pks = list()
@@ -20,13 +22,13 @@ def create_rssnotification_instances(feed_items, feed_source=None):
             if RssNotification.objects.filter(
                 title=title, created_on__gte=timezone.now() - timedelta(days=1)
             ).exists():
-                logging.info(f"Skipping item `{title}` as already existing.")
+                logger.info(f"Skipping item `{title}` as already existing.")
                 continue
 
             try:
                 instance = form.save()
             except IntegrityError:
-                logging.info(f"Skipping item `{title}` as already existing.")
+                logger.info(f"Skipping item `{title}` as already existing.")
                 continue
 
             if feed_source:

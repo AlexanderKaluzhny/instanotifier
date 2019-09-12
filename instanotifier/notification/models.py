@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from django.db.models.functions import Trunc
-from django.db.models import DateField, Count
+from django.db.models import DateField, Count, Q
 from django.db.models.expressions import F
 
 from instanotifier.notification.utils import html
@@ -50,10 +50,9 @@ class RssNotificationQuerySet(models.QuerySet):
     def not_downvoted(self):
         return self.exclude(rating=Ratings.DOWNVOTED)
 
-    def get_dates_only(self):
+    def get_dates_stats(self):
         """
-        Returns the queryset containing entries having the date field only.
-        Date is a trunc of a published_parsed datetime field.
+        Returns the queryset containing entries having the date field and rating stats.
         """
 
         # NOTE: order_by influences the distinct() results here
@@ -69,6 +68,9 @@ class RssNotificationQuerySet(models.QuerySet):
             .filter(plain_field__isnull=False)
             .order_by("-published_parsed_date")
             .annotate(dates_count=Count("published_parsed"))
+            .annotate(upvoted=Count('rating', filter=Q(rating=Ratings.UPVOTED)))
+            .annotate(downvoted=Count('rating', filter=Q(rating=Ratings.DOWNVOTED)))
+            .annotate(plain=Count('rating', filter=Q(rating=Ratings.DEFAULT)))
         )
 
         return date_times

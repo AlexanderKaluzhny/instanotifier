@@ -24,7 +24,10 @@
 
     function renderListItem (dateItem) {
       var dateItemUrl = DatesListController.dateListFilteringUrl + dateItem['published_parsed_date']
-      var dateItemListContent = dateItem['published_parsed_date'] + "<span class=\"badge\">" + dateItem['dates_count'] + "</span>"
+      var dateItemListContent = dateItem['published_parsed_date']
+        + "<span class=\"badge\">" + dateItem['dates_count'] + "</span>"
+        + "<span class=\"label label-primary float-center\">" + dateItem['plain'] + "</span>"
+        + "<span class=\"label label-success float-center\">" + dateItem['upvoted'] + "</span>";
 
       var itemHtml = ['<a class=\"', "list-group-item", "\" href=\"", dateItemUrl, "\">", dateItemListContent, "</a>"];
       if (DatesListController.dateFilteredBy.length !== 0 &&

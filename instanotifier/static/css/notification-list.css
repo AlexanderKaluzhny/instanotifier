@@ -14,3 +14,7 @@
   max-height: 75vh;
   overflow: auto;
 }
+
+.float-center {
+  margin: 2px;
+}

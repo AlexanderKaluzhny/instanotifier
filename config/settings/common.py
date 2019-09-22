@@ -46,6 +46,7 @@ DJANGO_APPS = (
     'django.contrib.admin',
 )
 THIRD_PARTY_APPS = (
+    'django_elasticsearch_dsl',
     'rest_framework',
 
     'crispy_forms',  # Form layouts
@@ -283,6 +284,14 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = r'^admin/'
+
+# ElasticSearch
+# ------------------------------------------------------------------------------
+ELASTICSEARCH_DSL={
+    'default': {
+        'hosts': 'localhost:9200'
+    },
+}
 
 
 # LOGGING CONFIGURATION

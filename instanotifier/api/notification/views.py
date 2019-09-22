@@ -1,3 +1,5 @@
+from elasticsearch_dsl.connections import connections
+
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework.generics import ListAPIView, GenericAPIView, get_object_or_404
@@ -14,6 +16,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.filter_backends import MultiMatchSearchFilterBackend
+
 from django.utils.functional import cached_property
 
 from instanotifier.api.serializers import (
@@ -22,6 +27,8 @@ from instanotifier.api.serializers import (
 )
 from instanotifier.api.notification.rating import RatingManager
 from instanotifier.notification.models import RssNotification, Ratings
+
+from instanotifier.notification.documents import RssNotificationDocument
 
 
 class TemplateHTMLRendererBase(TemplateHTMLRenderer):
@@ -81,16 +88,27 @@ class PaginationSettings(PageNumberPagination):
     page_size = 50
 
 
-class NotificationListView(ListAPIView):
-    """ Renders list of RssNotification objects """
+class CustomMultiMatchSearchFilterBackend(MultiMatchSearchFilterBackend):
+    search_param = 'search'
 
+    def should_search(self, request, queryset, view):
+        search_terms = self.get_search_query_params(request)
+        return bool(search_terms)
+
+
+class NotificationListView(ListAPIView):
+    """ Renders list of RssNotification objects. Searching through the ElasticSearch """
+
+    document = RssNotificationDocument
     queryset = RssNotification.objects.all()
+
     serializer_class = RssNotificationSerializer
     renderer_classes = (ListViewTemplateRenderer, JSONRenderer, BrowsableAPIRenderer)
-
     pagination_class = PaginationSettings
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
-    search_fields = ["title", "summary"]
+
+    es_filter_backends = (CustomMultiMatchSearchFilterBackend, )
+    filter_backends = (DjangoFilterBackend, )
+    multi_match_search_fields = ["title", "summary"]
     filter_fields = {
         "published_parsed": [
             "date"
@@ -98,13 +116,55 @@ class NotificationListView(ListAPIView):
         "rating": ["exact"],
     }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._init_for_search()
+
+    def _init_for_search(self):
+        """
+        Initialize attributes necessary for ES search
+        """
+
+        self.client = connections.get_connection(
+            self.document._get_using()
+        )
+        self.index = self.document._index._name
+        self.mapping = self.document._doc_type.mapping.properties.name
+        self.search = self.document.search(
+            using=self.client,
+            index=self.index,
+        )
+
     @cached_property
     def rating_manager(self):
         return RatingManager()
 
-    def filter_queryset(self, queryset):
-        queryset = super(NotificationListView, self).filter_queryset(queryset)
+    def _filter_by_elasticsearch(self, queryset):
+        """
+        Return search results from ElasticSearch
+        :param queryset:
+        :return: QuerySet
+        """
+        es_query = self.search.query()
+        es_query.model = self.document.Django.model
 
+        do_search = False
+        for es_filter_backend in list(self.es_filter_backends):
+            esfb = es_filter_backend()
+            if esfb.should_search(self.request, es_query, self):
+                do_search = True
+                es_query = esfb.filter_queryset(self.request, es_query, self)
+
+        if do_search:
+            es_query = es_query.extra(from_=0, size=500)
+            queryset = es_query.to_queryset()
+
+        return queryset
+
+    def filter_queryset(self, queryset):
+        queryset = self._filter_by_elasticsearch(queryset)
+        queryset = super().filter_queryset(queryset)
+        #
         # custom logic for excluding of downvoted RssNotifications.
         queryset = self.rating_manager.filter_queryset(self.request, queryset, self)
 

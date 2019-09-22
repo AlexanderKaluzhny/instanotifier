@@ -15,10 +15,16 @@
   <span id="rating-url" data-url="{% url 'api-v1:rssnotification-rating' %}"></span>
 
   <div class="row notification-list-page-header">
-    <div class="col-md-8">
+    <div class="col-md-5">
       {% if paginator %}
       {% bootstrap_paginate paginator.page range=10 %}
       {% endif %}
+    </div>
+    <div class="col-md-3">
+      <form method="get">
+        <div class="controls "><input type="text" name="search" class="form-control"></div>
+        <!--<input type="submit" name="" value="Submit" class="btn btn-primary btn-default" id="submit-id-">-->
+      </form>
     </div>
     <div class="col-md-3">
       {% if rating_checkbox.is_shown %}

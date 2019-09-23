@@ -1,12 +1,9 @@
-from elasticsearch_dsl.connections import connections
-
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework.generics import ListAPIView, GenericAPIView, get_object_or_404
 from rest_framework.renderers import (
     BrowsableAPIRenderer,
     JSONRenderer,
-    TemplateHTMLRenderer,
 )
 
 from rest_framework.pagination import PageNumberPagination
@@ -21,6 +18,7 @@ from django_elasticsearch_dsl_drf.filter_backends import MultiMatchSearchFilterB
 
 from django.utils.functional import cached_property
 
+from instanotifier.api.notification.renderers import ListViewTemplateRenderer, TemplateHTMLRendererBase
 from instanotifier.api.serializers import (
     RssNotificationSerializer,
     RssNotificationDateSerializer,
@@ -31,84 +29,72 @@ from instanotifier.notification.models import RssNotification, Ratings
 from instanotifier.notification.documents import RssNotificationDocument
 
 
-class TemplateHTMLRendererBase(TemplateHTMLRenderer):
-    """ Base class that converts the context into a dict """
-
-    def _convert_context_into_dict(self, context):
-        if not "results" in context and not isinstance(context, dict):
-            context = dict(results=context)
-        return context
-
-    def get_template_context(self, data, renderer_context):
-        # NOTE: the data input argument should be a dictionary, according
-        # to parent get_template_context()
-        # The pagination of view translates the queryset into a dict.
-
-        context = super(TemplateHTMLRendererBase, self).get_template_context(
-            data, renderer_context
-        )
-
-        context = self._convert_context_into_dict(context)
-        return context
-
-
-class ListViewTemplateRenderer(TemplateHTMLRendererBase, BrowsableAPIRenderer):
-    """ Renders the list of RssNotifications into an html. Supports searching. """
-
-    template_name = "api/notification/rssnotification_api_list.html"
-
-    def get_template_context(self, data, renderer_context):
-        view = renderer_context["view"]
-        request = renderer_context["request"]
-        response = renderer_context["response"]
-
-        context = super(ListViewTemplateRenderer, self).get_template_context(
-            data, renderer_context
-        )
-
-        if getattr(view, "paginator", None) and view.paginator.display_page_controls:
-            paginator = view.paginator
-        else:
-            paginator = None
-
-        context["paginator"] = paginator
-        context["filter_form"] = self.get_filter_form(data, view, request)
-        context["filter_date_used"] = (
-            view.filter_date_used if hasattr(view, "filter_date_used") else ""
-        )
-        context["rating_checkbox"] = view.rating_manager.checkbox
-        context["rating_checkbox_is_checked"] = (
-            "checked" if view.rating_manager.checkbox.is_checked else ""
-        )
-
-        return context
-
-
 class PaginationSettings(PageNumberPagination):
     page_size = 50
 
 
 class CustomMultiMatchSearchFilterBackend(MultiMatchSearchFilterBackend):
-    search_param = 'search'
+    search_param = "search"
 
-    def should_search(self, request, queryset, view):
+    def should_search(self, request):
         search_terms = self.get_search_query_params(request)
         return bool(search_terms)
+
+
+class NotificationSearchViewSet(DocumentViewSet):
+    """ Endpoint to be used for searching through ElasticSearch """
+
+    document = RssNotificationDocument
+    queryset = RssNotification.objects.all()
+
+    renderer_classes = (JSONRenderer,)
+
+    filter_backends = (CustomMultiMatchSearchFilterBackend,)
+    multi_match_search_fields = ["title", "summary"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # override the search object with the django_elasticsearch_dsl implementation in order to provide
+        # the Search.to_queryset() method
+        self.search = self.document.search(using=self.client, index=self.index)
+
+    def _should_search(self):
+        do_search = False
+        for es_filter_backend in list(self.filter_backends):
+            if es_filter_backend().should_search(self.request):
+                do_search = True
+        return do_search
+
+    def filter_queryset(self, queryset):
+        """
+        :param queryset: of type django_elasticsearch_dsl.search.Search
+        :return: django_elasticsearch_dsl.search.Search object
+        """
+        es_query = super().filter_queryset(queryset)
+        es_query = es_query.extra(from_=0, size=500).sort("-published_parsed", "_score")
+        queryset = es_query
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        """
+        Shows the ES raw search result
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        data = queryset.execute()
+        return Response(data.to_dict())
 
 
 class NotificationListView(ListAPIView):
     """ Renders list of RssNotification objects. Searching through the ElasticSearch """
 
-    document = RssNotificationDocument
     queryset = RssNotification.objects.all()
 
     serializer_class = RssNotificationSerializer
     renderer_classes = (ListViewTemplateRenderer, JSONRenderer, BrowsableAPIRenderer)
     pagination_class = PaginationSettings
 
-    es_filter_backends = (CustomMultiMatchSearchFilterBackend, )
-    filter_backends = (DjangoFilterBackend, )
-    multi_match_search_fields = ["title", "summary"]
+    filter_backends = (DjangoFilterBackend,)
     filter_fields = {
         "published_parsed": [
             "date"
@@ -116,47 +102,20 @@ class NotificationListView(ListAPIView):
         "rating": ["exact"],
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._init_for_search()
-
-    def _init_for_search(self):
-        """
-        Initialize attributes necessary for ES search
-        """
-
-        self.client = connections.get_connection(
-            self.document._get_using()
-        )
-        self.index = self.document._index._name
-        self.mapping = self.document._doc_type.mapping.properties.name
-        self.search = self.document.search(
-            using=self.client,
-            index=self.index,
-        )
-
     @cached_property
     def rating_manager(self):
         return RatingManager()
 
     def _filter_by_elasticsearch(self, queryset):
         """
-        Return search results from ElasticSearch
+        Return search results from ElasticSearch if the search params were specified
         :param queryset:
         :return: QuerySet
         """
-        es_query = self.search.query()
-        es_query.model = self.document.Django.model
-
-        do_search = False
-        for es_filter_backend in list(self.es_filter_backends):
-            esfb = es_filter_backend()
-            if esfb.should_search(self.request, es_query, self):
-                do_search = True
-                es_query = esfb.filter_queryset(self.request, es_query, self)
-
-        if do_search:
-            es_query = es_query.extra(from_=0, size=500)
+        search_view = NotificationSearchViewSet()
+        search_view.setup(self.request, *self.args, **self.kwargs)
+        if search_view._should_search():
+            es_query = search_view.filter_queryset(search_view.get_queryset())
             queryset = es_query.to_queryset()
 
         return queryset
@@ -164,7 +123,7 @@ class NotificationListView(ListAPIView):
     def filter_queryset(self, queryset):
         queryset = self._filter_by_elasticsearch(queryset)
         queryset = super().filter_queryset(queryset)
-        #
+
         # custom logic for excluding of downvoted RssNotifications.
         queryset = self.rating_manager.filter_queryset(self.request, queryset, self)
 

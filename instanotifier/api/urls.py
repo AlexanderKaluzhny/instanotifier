@@ -8,15 +8,15 @@ app_name = "api-v1"
 router = DefaultRouter()
 router.include_root_view = False
 
-# router.register(
-#     r'rss-search',
-#     notification_views.NotificationSearchViewSet,
-#     basename='rss'
-# )
+router.register(
+    r'rss-search',
+    notification_views.NotificationSearchViewSet,
+    basename='rss'
+)
 
-# urlpatterns = router.urls
+urlpatterns = router.urls
 
-urlpatterns = [
+urlpatterns += [
     url(
         r"^$",
         notification_views.NotificationListView.as_view(),

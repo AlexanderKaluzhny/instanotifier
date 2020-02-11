@@ -1,7 +1,7 @@
 ipython>=7.5.0
 
 celery==4.3.0
-Django==2.2.2
+Django==2.2.10
 djangorestframework==3.9.4
 coreapi==2.3.3
 

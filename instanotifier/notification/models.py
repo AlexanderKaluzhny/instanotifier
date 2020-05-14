@@ -25,25 +25,21 @@ class Ratings(object):
     UPVOTED = 1
     DOWNVOTED = -1
 
-    DEFAULT_READABLE = "default"
-    UPVOTED_READABLE = "upvoted"
-    DOWNVOTED_READABLE = "downvoted"
-
     @classmethod
     def as_choices(cls):
         return (
-            (cls.DEFAULT, cls.DEFAULT_READABLE),
-            (cls.UPVOTED, cls.UPVOTED_READABLE),
-            (cls.DOWNVOTED, cls.DOWNVOTED_READABLE),
+            (cls.DEFAULT, "default"),
+            (cls.UPVOTED, "upvoted"),
+            (cls.DOWNVOTED, "downvoted"),
         )
 
     @classmethod
-    def as_readables_dict(cls):
+    def as_display_dict(cls):
         return {v: k for k, v in cls.as_choices()}
 
     @classmethod
-    def get_value_or_none(self, readable):
-        return self.as_readables_dict().get(readable, None)
+    def get_value_or_none(self, display_value):
+        return self.as_display_dict().get(display_value, None)
 
 
 class RssNotificationQuerySet(models.QuerySet):

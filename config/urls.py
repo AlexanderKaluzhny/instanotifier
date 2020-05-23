@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^api/v1/', include('instanotifier.api.urls', namespace='api-v1')),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^react-index/', TemplateView.as_view(template_name='react/index.html') ),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

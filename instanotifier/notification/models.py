@@ -54,19 +54,19 @@ class RssNotificationQuerySet(models.QuerySet):
         # NOTE: order_by influences the distinct() results here
         date_times = (
             RssNotification.objects.annotate(
-                published_parsed_date=Trunc(
+                day_date=Trunc(
                     "published_parsed", "day", output_field=DateField()
                 ),
                 plain_field=F("published_parsed"),
             )
-            .values("published_parsed_date")
+            .values("day_date")
             .distinct()
             .filter(plain_field__isnull=False)
-            .order_by("-published_parsed_date")
-            .annotate(dates_count=Count("published_parsed"))
-            .annotate(upvoted=Count('rating', filter=Q(rating=Ratings.UPVOTED)))
-            .annotate(downvoted=Count('rating', filter=Q(rating=Ratings.DOWNVOTED)))
-            .annotate(plain=Count('rating', filter=Q(rating=Ratings.DEFAULT)))
+            .order_by("-day_date")
+            .annotate(total=Count("id"))
+            .annotate(upvoted=Count("id", filter=Q(rating=Ratings.UPVOTED)))
+            .annotate(downvoted=Count("id", filter=Q(rating=Ratings.DOWNVOTED)))
+            .annotate(plain=Count("id", filter=Q(rating=Ratings.DEFAULT)))
         )
 
         return date_times

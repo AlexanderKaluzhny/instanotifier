@@ -2,19 +2,19 @@ const initialState = {
   count: 0,
   listChunk: [],
   pageSize: 50,
-}
+};
 
-const tasks = (state = initialState, action) => {
+const items = (state = initialState, action) => {
   switch (action.type) {
-    case 'SET_LIST': 
+    case "SET_LIST":
       return {
         ...state,
         count: action.count,
         listChunk: action.listChunk,
-      }
-    default: 
+      };
+    default:
       return state;
   }
-}
+};
 
-export default tasks;
+export default items;

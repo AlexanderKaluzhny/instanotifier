@@ -29,10 +29,10 @@ class RssNotificationSerializer(serializers.ModelSerializer):
 class RssNotificationDateSerializer(serializers.Serializer):
     """ Serializer for rendering of the RssNotifications' published_parsed dates"""
 
-    published_parsed_date = serializers.DateField(
+    day_date = serializers.DateField(
         format=RSSNOTIFICATION_DATE_OUTPUT_FORMAT
     )
-    dates_count = serializers.IntegerField()
+    total = serializers.IntegerField()
     upvoted = serializers.IntegerField()
     downvoted = serializers.IntegerField()
     plain = serializers.IntegerField()

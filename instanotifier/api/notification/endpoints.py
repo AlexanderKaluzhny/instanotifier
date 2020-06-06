@@ -98,7 +98,7 @@ class NotificationDatesListEndpoint(ListAPIView):
     """
     Renders list of dates from the RssNotification published_parsed field.
     """
-    renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer, )
     serializer_class = RssNotificationDateSerializer
 
     def get_queryset(self):

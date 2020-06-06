@@ -1,8 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import Typography from '@material-ui/core/Typography';
 
 function ItemsList(props) {
-  const { list: itemsList, count } = useSelector(state => state.items)
+  const { listChunk: itemsList, count } = useSelector(state => state.items)
 
   return (
     <React.Fragment>
@@ -11,7 +12,7 @@ function ItemsList(props) {
         {itemsList &&
           itemsList.map(({ title, summary, country, source_name }) => (
             <li key={title}>
-              <h5>{title}</h5>
+              <Typography variant="body1">{title}</Typography>
             </li>
           ))}
       </ul>

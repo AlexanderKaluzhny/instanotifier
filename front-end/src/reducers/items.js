@@ -1,6 +1,7 @@
 const initialState = {
   count: 0,
-  list: []
+  listChunk: [],
+  pageSize: 50,
 }
 
 const tasks = (state = initialState, action) => {
@@ -9,7 +10,7 @@ const tasks = (state = initialState, action) => {
       return {
         ...state,
         count: action.count,
-        list: action.list,
+        listChunk: action.listChunk,
       }
     default: 
       return state;

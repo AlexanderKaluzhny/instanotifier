@@ -1,25 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import React from 'react';
+import { Provider as StoreProvider } from "react-redux";
+import { configureStore } from "./store";
+import Container from '@material-ui/core/Container';
+import ItemsList from './components/ItemsList';
+import ItemsRequestor from './components/ItemsRequestor';
+import Pagination from "./components/Pagination";
+
+const store = configureStore();
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <br />
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <StoreProvider store={store}>
+        <ItemsRequestor />
+        <Container>
+          <Pagination />
+          <ItemsList />
+        </Container>
+      </StoreProvider>
     </div>
   );
 }

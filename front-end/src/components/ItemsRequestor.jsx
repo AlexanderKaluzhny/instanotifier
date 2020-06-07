@@ -33,8 +33,8 @@ function ItemsRequestor(props) {
 export default connect(
   state => ({
     urlParams: {
-      // TODO: combine all the provided filters into params object
-      page: state.filters.currentPage
+      page: state.filters.currentPage,
+      published_parsed__date: state.filters.currentDate,
     }
   }),
   dispatch => ({

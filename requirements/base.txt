@@ -37,3 +37,5 @@ elasticsearch==7.6.0
 elasticsearch-dsl==7.1.0
 django-elasticsearch-dsl==7.1.1
 django-elasticsearch-dsl-drf==0.20.8
+
+beautifulsoup4==4.9.1

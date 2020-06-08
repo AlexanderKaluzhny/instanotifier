@@ -1,7 +1,7 @@
 const initialState = {
   count: 0,
   listChunk: [],
-  pageSize: 50,
+  pageSize: 20,
 };
 
 const items = (state = initialState, action) => {

@@ -1,5 +1,6 @@
 import re
 from rest_framework import serializers
+from bs4 import BeautifulSoup
 
 from instanotifier.notification.models import RssNotification
 
@@ -9,10 +10,15 @@ RSSNOTIFICATION_DATE_OUTPUT_FORMAT = "%Y-%m-%d"
 class RssNotificationSerializer(serializers.ModelSerializer):
     country = serializers.SerializerMethodField()
     source_name = serializers.SerializerMethodField()
+    short_summary = serializers.SerializerMethodField()
+    budget = serializers.SerializerMethodField()
 
     class Meta:
         model = RssNotification
-        fields = ["id", "title", "summary", "link", "published_parsed", "rating", "country", "source_name"]
+        fields = [
+            "id", "title", "summary", "link", "published_parsed", "rating", "country", "source_name",
+            "short_summary", "budget",
+        ]
         extra_kwargs = {"published_parsed": {"format": "%H:%M:%S %Y-%m-%d"}}
 
     def get_source_name(self, obj):
@@ -20,10 +26,25 @@ class RssNotificationSerializer(serializers.ModelSerializer):
         return name
 
     def get_country(self, obj):
-        regex = r'(?<=Country</b>: )(.*)'
-        re_res = re.search(regex, obj.summary, re.MULTILINE)
-        country = re_res.group(0) if re_res else 'Unknown'
-        return country
+        soup = BeautifulSoup(obj.summary)
+        country_tag = soup.find(text="Country")
+        if country_tag:
+            country = country_tag.find_next(string=True).strip(': \n')
+            return country
+        return "Unknown"
+
+    def get_short_summary(self, obj):
+        return obj.summary[:200]
+
+    def get_budget(self, obj):
+        soup = BeautifulSoup(obj.summary)
+        for budget_text in ["Budget", "Hourly Range"]:
+            budget = soup.find(text=budget_text)
+            if budget:
+                return dict(
+                    name=budget_text,
+                    value=budget.find_next(string=True).strip(': \n')
+                )
 
 
 class RssNotificationDateSerializer(serializers.Serializer):

@@ -42,7 +42,7 @@ class SearchMixin(object):
 
 
 class PaginationSettings(PageNumberPagination):
-    page_size = 50
+    page_size = 20
 
 
 class NotificationViewSet(SearchMixin,

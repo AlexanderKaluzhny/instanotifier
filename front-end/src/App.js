@@ -3,12 +3,11 @@ import React from "react";
 import { Provider as StoreProvider } from "react-redux";
 import { configureStore } from "./store";
 import { Grid } from "@material-ui/core";
-import Container from "@material-ui/core/Container";
 import ItemsRequestor from "./components/ItemsRequestor";
 import DatesRequestor from "./components/DatesRequestor";
-import Pagination from "./components/Pagination";
 import ItemsList from "./components/ItemsList";
 import DatesList from "./components/DatesList";
+import Layout from "./Layout";
 
 const store = configureStore();
 
@@ -18,11 +17,8 @@ function App() {
       <StoreProvider store={store}>
         <ItemsRequestor />
         <DatesRequestor />
-        <Container>
+        <Layout>
           <Grid container>
-            <Grid item lg={12}>
-              <Pagination />
-            </Grid>
             <Grid item lg={8}>
               <ItemsList />
             </Grid>
@@ -30,7 +26,7 @@ function App() {
               <DatesList />
             </Grid>
           </Grid>
-        </Container>
+        </Layout>
       </StoreProvider>
     </div>
   );

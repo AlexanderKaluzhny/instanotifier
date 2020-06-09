@@ -155,13 +155,13 @@ module.exports = function(webpackEnv) {
       // In development, it does not produce real files.
       filename: isEnvProduction
         ? 'js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'js/bundle.js',
+        : isEnvDevelopment && 'js/bundle.[contenthash:8].js',
       // TODO: remove this when upgrading to webpack 5
       futureEmitAssets: true,
       // There are also additional JS chunk files if you use code splitting.
       chunkFilename: isEnvProduction
         ? 'js/[name].[contenthash:8].chunk.js'
-        : isEnvDevelopment && 'js/[name].chunk.js',
+        : isEnvDevelopment && 'js/[name].chunk.[contenthash:8].js',
       // webpack uses `publicPath` to determine where the app is being served from.
       // It requires a trailing slash, or the file assets will get an incorrect path.
       // We inferred the "public path" (such as / or /my-project) from homepage.

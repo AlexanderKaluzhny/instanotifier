@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import Chip from '@material-ui/core/Chip';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -36,8 +37,9 @@ export default function ItemCard(props) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+  const { title, summary, short_summary, country, budget, rating, source_name } = props;
+  const formattedBudget = (!!budget.name ? `${budget.name}: ${budget.value}` : "");
 
-  const { title, summary, short_summary, country, rating, source_name } = props;
   return (
     <Card>
       <CardHeader
@@ -55,7 +57,26 @@ export default function ItemCard(props) {
           </React.Fragment>
         }
         title={<Typography variant="h6">{title}</Typography>}
-        subheader={country}
+        subheader={
+          <Grid container>
+            <Grid item xs={8} spacing={3}>
+              <Typography variant="body1">{country}</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography align="right">{source_name}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              {formattedBudget && (
+                <Chip
+                  size="small"
+                  label={formattedBudget}
+                  color="secondary"
+                  variant="outlined"
+                />
+              )}
+            </Grid>
+          </Grid>
+        }
       />
       <CardContent>
         <Grid container>

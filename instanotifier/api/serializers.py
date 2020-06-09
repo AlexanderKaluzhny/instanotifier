@@ -45,6 +45,7 @@ class RssNotificationSerializer(serializers.ModelSerializer):
                     name=budget_text,
                     value=budget.find_next(string=True).strip(': \n')
                 )
+        return dict(name="", value="")
 
 
 class RssNotificationDateSerializer(serializers.Serializer):

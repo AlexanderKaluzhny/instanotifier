@@ -8,6 +8,7 @@ import DatesRequestor from "./components/DatesRequestor";
 import ItemsList from "./components/ItemsList";
 import DatesList from "./components/DatesList";
 import Layout from "./Layout";
+import ItemsListBar from "./components/ItemsListBar";
 
 const store = configureStore();
 
@@ -18,7 +19,10 @@ function App() {
         <ItemsRequestor />
         <DatesRequestor />
         <Layout>
-          <Grid container>
+          <Grid container spacing={1}>
+            <Grid item lg={12}>
+              <ItemsListBar />
+            </Grid>
             <Grid item lg={8}>
               <ItemsList />
             </Grid>

@@ -12,7 +12,7 @@ export default function Layout({ children }) {
   return (
     <React.Fragment>
       <CssBaseline />
-      <AppBar position="static">
+      <AppBar position="static" style={{ backgroundColor: "#043454" }}>
         <Toolbar id="back-to-top-anchor"></Toolbar>
       </AppBar>
       <Container>

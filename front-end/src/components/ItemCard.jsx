@@ -15,7 +15,7 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
 import StarBorderOutlinedIcon from '@material-ui/icons/StarBorderOutlined';
-import { Grid } from "@material-ui/core";
+import { Grid, Box } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   expand: {
@@ -42,7 +42,11 @@ export default function ItemCard(props) {
 
   return (
     <Card>
+      <Box p={2}>
+        <Typography align="right">{source_name}</Typography>
+      </Box>
       <CardHeader
+        style={{ paddingTop: 0 }}
         action={
           <React.Fragment>
             <IconButton aria-label="settings">
@@ -62,9 +66,7 @@ export default function ItemCard(props) {
             <Grid item xs={8} spacing={3}>
               <Typography variant="body1">{country}</Typography>
             </Grid>
-            <Grid item xs={4}>
-              <Typography align="right">{source_name}</Typography>
-            </Grid>
+
             <Grid item xs={12}>
               {formattedBudget && (
                 <Chip

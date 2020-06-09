@@ -10,14 +10,6 @@ function ItemsList(props) {
 
   return (
     <React.Fragment>
-      <Grid container alignItems="center">
-        <Grid item xs={2}>
-          <Typography><b>{`Total: ${count}`}</b></Typography>
-        </Grid>
-        <Grid item xs={10}>
-          <Pagination />
-        </Grid>
-      </Grid>
       {itemsList &&
         itemsList.map((item) => (
           <Box my={1} key={item.title}>

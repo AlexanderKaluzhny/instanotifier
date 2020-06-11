@@ -1,5 +1,6 @@
 from instanotifier.parser.rss.test_utils import get_test_rss_feed_items
-from instanotifier.notification.views import create_rssnotification_instances
+from instanotifier.notification.services import create_rssnotification_instances
+from instanotifier.notification.serializers import _compute_entry_id_hash
 from instanotifier.notification.models import RssNotification
 
 
@@ -19,7 +20,7 @@ def delete_test_rss_feed_notifications():
 
     deleted_count = 0
     for item in feed_items:
-        id_hash = RssNotification.compute_entry_id_hash(item["id"])
+        id_hash = _compute_entry_id_hash(item["id"])
         try:
             obj = RssNotification.objects.get(internal_id=id_hash)
         except RssNotification.DoesNotExist:

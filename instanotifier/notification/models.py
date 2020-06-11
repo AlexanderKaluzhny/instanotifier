@@ -1,4 +1,3 @@
-import hashlib
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -7,7 +6,6 @@ from django.db.models.functions import Trunc
 from django.db.models import DateField, Count, Q
 from django.db.models.expressions import F
 
-from instanotifier.notification.utils import html
 
 """
 RSS_FEED_ENTRY_FIELDS = [
@@ -91,9 +89,12 @@ class RssNotification(models.Model):
     link = models.URLField(_("Link"), max_length=2083)
     published_parsed = models.DateTimeField(_("Published"))
     entry_id = models.CharField(_("Rss entry id"), max_length=2083)
+
     rating = models.SmallIntegerField(
         choices=Ratings.as_choices(), default=Ratings.DEFAULT
     )
+    country = models.CharField(max_length=64)
+
     created_on = models.DateTimeField("Created on", auto_now_add=True)
 
     objects = RssNotificationQuerySet.as_manager()
@@ -103,24 +104,3 @@ class RssNotification(models.Model):
 
     def __str__(self):
         return "%s %s" % (self.title, self.published_parsed)
-
-    @classmethod
-    def compute_entry_id_hash(cls, entry_id):
-        return hashlib.md5(entry_id.encode("utf-8")).hexdigest()
-
-    def evaluate_internal_id(self):
-        if self.internal_id:
-            return self.internal_id
-
-        if not self.entry_id:
-            raise ValueError("Entry_id is not specified.")
-
-        self.internal_id = self.compute_entry_id_hash(self.entry_id)
-        return self.internal_id
-
-    def save(self, *args, **kwargs):
-        self.evaluate_internal_id()
-
-        self.summary = html.clean_html(self.summary)
-
-        super().save(*args, **kwargs)

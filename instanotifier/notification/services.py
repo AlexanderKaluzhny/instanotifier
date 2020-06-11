@@ -4,7 +4,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.db.utils import IntegrityError
 
-from instanotifier.notification.forms import RssNotificationForm
+from instanotifier.notification.serializers import RssNotificationSerializer
 from instanotifier.notification.models import RssNotification
 
 logger = logging.getLogger('general_file')
@@ -13,11 +13,10 @@ logger = logging.getLogger('general_file')
 def create_rssnotification_instances(feed_items, feed_source=None):
     saved_pks = list()
     for item in feed_items:
-        form = RssNotificationForm(data=item)
-        if form.is_valid():
-            cd = form.cleaned_data
-            entry_id = cd["entry_id"]
-            title = cd["title"]
+        serializer = RssNotificationSerializer(data=item)
+        if serializer.is_valid(raise_exception=True):
+            vd = serializer.validated_data
+            title = vd["title"]
 
             if RssNotification.objects.filter(
                 title=title, created_on__gte=timezone.now() - timedelta(days=1)
@@ -26,7 +25,7 @@ def create_rssnotification_instances(feed_items, feed_source=None):
                 continue
 
             try:
-                instance = form.save()
+                instance = serializer.save()
             except IntegrityError:
                 logger.info(f"Skipping item `{title}` as already existing.")
                 continue

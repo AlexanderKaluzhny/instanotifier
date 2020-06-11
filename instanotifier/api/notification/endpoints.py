@@ -107,3 +107,7 @@ class NotificationDatesListEndpoint(ListAPIView):
         """
         date_times = RssNotification.objects.get_dates_stats()
         return date_times
+
+
+class DatesStatsAPIView(ListAPIView):
+    pass

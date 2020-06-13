@@ -11,7 +11,9 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
 from instanotifier.notification.models import RssNotification, Ratings
-from instanotifier.api.serializers import (
+from instanotifier.notification import selectors
+
+from .serializers import (
     RssNotificationSerializer,
     RssNotificationDateSerializer,
 )
@@ -49,7 +51,6 @@ class NotificationViewSet(SearchMixin,
                           mixins.ListModelMixin,
                           mixins.RetrieveModelMixin,
                           GenericViewSet):
-
     queryset = RssNotification.objects.all()
     serializer_class = RssNotificationSerializer
     pagination_class = PaginationSettings
@@ -98,16 +99,11 @@ class NotificationDatesListEndpoint(ListAPIView):
     """
     Renders list of dates from the RssNotification published_parsed field.
     """
-    renderer_classes = (JSONRenderer, BrowsableAPIRenderer, )
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer,)
     serializer_class = RssNotificationDateSerializer
 
     def get_queryset(self):
         """
         Returns the queryset containing entries having the date and rating stats fields.
         """
-        date_times = RssNotification.objects.get_dates_stats()
-        return date_times
-
-
-class DatesStatsAPIView(ListAPIView):
-    pass
+        return selectors.daily_posted_ratings()

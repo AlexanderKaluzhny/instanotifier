@@ -1,4 +1,3 @@
-import re
 from rest_framework import serializers
 from bs4 import BeautifulSoup
 
@@ -8,7 +7,6 @@ RSSNOTIFICATION_DATE_OUTPUT_FORMAT = "%Y-%m-%d"
 
 
 class RssNotificationSerializer(serializers.ModelSerializer):
-    country = serializers.SerializerMethodField()
     source_name = serializers.SerializerMethodField()
     short_summary = serializers.SerializerMethodField()
     budget = serializers.SerializerMethodField()
@@ -24,14 +22,6 @@ class RssNotificationSerializer(serializers.ModelSerializer):
     def get_source_name(self, obj):
         name = obj.feed_source.name if obj.feed_source else ''
         return name
-
-    def get_country(self, obj):
-        soup = BeautifulSoup(obj.summary)
-        country_tag = soup.find(text="Country")
-        if country_tag:
-            country = country_tag.find_next(string=True).strip(': \n')
-            return country
-        return "Unknown"
 
     def get_short_summary(self, obj):
         return obj.summary[:200]
@@ -58,3 +48,7 @@ class RssNotificationDateSerializer(serializers.Serializer):
     upvoted = serializers.IntegerField()
     downvoted = serializers.IntegerField()
     plain = serializers.IntegerField()
+
+
+
+

@@ -33,5 +33,9 @@ urlpatterns += [
     path(
         "statistics/countries/daily-posted/",
         stats_endpoints.CountriesDailyStatisticsEndpoint.as_view(),
+    ),
+    path(
+        "statistics/daily-totals/",
+        stats_endpoints.DailyTotalPostedStatisticsEndpoint.as_view(),
     )
 ]

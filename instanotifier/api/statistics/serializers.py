@@ -54,3 +54,13 @@ def transform_countries_queryset(countries_daily_qs):
         res.push_country(country, map(getter, country_group))
 
     return res
+
+
+def transform_daily_total_queryset(daily_total_qs):
+    qs = daily_total_qs
+
+    res = TransformedResult()
+    for item in qs:
+        res.push_total(item['day_date'], item['total'])
+
+    return res

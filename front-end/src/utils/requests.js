@@ -1,3 +1,13 @@
+import { csrfSafeMethod, getCookie } from "./csrf";
+
+async function _fetch(url, options) {
+  if (!csrfSafeMethod(options.method)) {
+    options.headers["X-CSRFToken"] = getCookie("csrftoken");
+  }
+
+  return fetch(url, options);
+}
+
 function parseJSON(response) {
   return new Promise((resolve) => {
     const jsonPromise = response.json();
@@ -45,22 +55,34 @@ export const getResponseJsonOrError = (response) => {
   });
 };
 
+export const patch = (url, data, fetchOptions) => {
+  const options = fetchOptions || {};
+
+  options.body = JSON.stringify(data);
+  options.headers = options.headers || {};
+  options.headers["Content-Type"] = "application/json";
+  options.method = "PATCH";
+
+  return _fetch(url, options);
+};
+
 export const post = (url, data, fetchOptions) => {
   const options = fetchOptions || {};
 
   options.body = JSON.stringify(data);
   options.headers = options.headers || {};
+  options.headers["Content-Type"] = "application/json";
   options.method = "POST";
 
-  return fetch(url, options);
+  return _fetch(url, options);
 };
 
 export const get = (url, data, fetchOptions) => {
   const options = fetchOptions || {};
 
   options.headers = options.headers || {};
-  options.headers['Content-Type'] = 'application/json';
+  options.headers["Content-Type"] = "application/json";
   options.method = "GET";
 
-  return fetch(url, options);
+  return _fetch(url, options);
 };

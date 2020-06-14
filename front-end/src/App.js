@@ -25,10 +25,10 @@ function App() {
               <ItemsListBar />
             </Grid>
             <Grid item lg={8}>
-              {/* <ItemsList /> */}
+              <ItemsList />
             </Grid>
             <Grid item lg={4}>
-              {/* <DatesList /> */}
+              <DatesList />
             </Grid>
           </Grid>
           <hr />

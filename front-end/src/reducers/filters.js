@@ -1,4 +1,4 @@
-import * as filtersActions from "../actions";
+import * as filtersActions from "../actions/filters";
 
 const initialState = {
   currentPage: 1,

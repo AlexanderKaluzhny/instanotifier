@@ -41,38 +41,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-export default function PaginatedDatesList(props) {
-  const { datesList } = useSelector(state => state.dates);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(31);
-
-  return (
-    <React.Fragment>
-      <DatesList
-        datesList={datesList.slice(
-          page * rowsPerPage,
-          page * rowsPerPage + rowsPerPage
-        )}
-      />
-      <Pagination
-        totalItems={datesList.length}
-        page={page}
-        setPage={setPage}
-        rowsPerPage={rowsPerPage}
-        setRowsPerPage={setRowsPerPage}
-      />
-    </React.Fragment>
-  );
-}
-
-const DatesList = connect(
-  null,
-  (dispatch) => ({
-    setDateFilter: (date) => dispatch(setCurrentDate(date)),
-  })
-)(DatesListComponent);
-
 function DatesListComponent(props) {
   const classes = useStyles();
   const { datesList } = props;
@@ -130,6 +98,13 @@ function DatesListComponent(props) {
   );
 }
 
+const DatesList = connect(
+  null,
+  (dispatch) => ({
+    setDateFilter: (date) => dispatch(setCurrentDate(date)),
+  })
+)(DatesListComponent);
+
 function Pagination(props) {
   const { totalItems, page, setPage, rowsPerPage, setRowsPerPage } = props;
 
@@ -152,5 +127,29 @@ function Pagination(props) {
       rowsPerPage={rowsPerPage}
       onChangeRowsPerPage={handleChangeRowsPerPage}
     />
+  );
+}
+
+export default function PaginatedDatesList(props) {
+  const { datesList } = useSelector(state => state.dates);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(31);
+
+  return (
+    <React.Fragment>
+      <DatesList
+        datesList={datesList.slice(
+          page * rowsPerPage,
+          page * rowsPerPage + rowsPerPage
+        )}
+      />
+      <Pagination
+        totalItems={datesList.length}
+        page={page}
+        setPage={setPage}
+        rowsPerPage={rowsPerPage}
+        setRowsPerPage={setRowsPerPage}
+      />
+    </React.Fragment>
   );
 }

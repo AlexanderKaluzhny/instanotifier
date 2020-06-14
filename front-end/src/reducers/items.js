@@ -1,3 +1,5 @@
+import * as itemActions from "../actions/items";
+
 const initialState = {
   count: 0,
   listChunk: [],
@@ -6,11 +8,18 @@ const initialState = {
 
 const items = (state = initialState, action) => {
   switch (action.type) {
-    case "SET_LIST":
+    case itemActions.SET_LIST:
       return {
         ...state,
         count: action.count,
         listChunk: action.listChunk,
+      };
+    case itemActions.SET_RATING:
+      return {
+        ...state,
+        listChunk: state.listChunk.map((item) =>
+          item.id === action.id ? { ...item, rating: action.rating } : item
+        ),
       };
     default:
       return state;

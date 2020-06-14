@@ -36,8 +36,40 @@ export default function ItemCard(props) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  const { title, summary, short_summary, country, budget, rating, source_name } = props;
+  const { id, title, summary, short_summary, country, budget, rating, source_name } = props.item;
+  const { onRatingChange } = props;
   const formattedBudget = (!!budget.name ? `${budget.name}: ${budget.value}` : "");
+
+  const getUpvoteButton = () => {
+    if (rating === 1) {
+      return (
+        <IconButton onClick={() => onRatingChange(id, "default")}>
+          <ThumbUpIcon color="primary" />
+        </IconButton>
+      );
+    }
+    return (
+      <IconButton onClick={() => onRatingChange(id, "upvoted")}>
+        <ThumbUpOutlinedIcon />
+      </IconButton>
+    );
+  }
+
+  const getDownvoteButton = () => {
+    if (rating === -1) {
+      return (
+        <IconButton onClick={() => onRatingChange(id, "default")}>
+          <ThumbDownIcon color="primary" />
+        </IconButton>
+      );
+    }
+
+    return (
+      <IconButton onClick={() => onRatingChange(id, "downvoted")}>
+        <ThumbDownOutlinedIcon />
+      </IconButton>
+    );
+  }
 
   return (
     <Card>
@@ -48,13 +80,9 @@ export default function ItemCard(props) {
         style={{ paddingTop: 0 }}
         action={
           <React.Fragment>
-            <IconButton aria-label="settings">
-              <ThumbUpOutlinedIcon />
-            </IconButton>
-            <IconButton aria-label="settings">
-              <ThumbDownOutlinedIcon />
-            </IconButton>
-            <IconButton aria-label="settings">
+            {getUpvoteButton()}
+            {getDownvoteButton()}
+            <IconButton>
               <StarBorderOutlinedIcon />
             </IconButton>
           </React.Fragment>
@@ -116,5 +144,4 @@ export default function ItemCard(props) {
       </CardActions> */}
     </Card>
   );
-  
 }

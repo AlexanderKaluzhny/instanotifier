@@ -74,7 +74,26 @@ export default function ItemCard(props) {
   return (
     <Card>
       <Box p={2}>
-        <Typography align="right">{source_name}</Typography>
+        <Grid container>
+          <Grid item xs={3}>
+            <Typography align="left" variant="body1">
+              {country}
+            </Typography>
+          </Grid>
+          <Grid item xs={3}>
+            {formattedBudget && (
+              <Chip
+                size="small"
+                label={formattedBudget}
+                color="secondary"
+                variant="outlined"
+              />
+            )}
+          </Grid>
+          <Grid item xs={6}>
+            <Typography align="right">{source_name}</Typography>
+          </Grid>
+        </Grid>
       </Box>
       <CardHeader
         style={{ paddingTop: 0 }}
@@ -88,26 +107,8 @@ export default function ItemCard(props) {
           </React.Fragment>
         }
         title={<Typography variant="h6">{title}</Typography>}
-        subheader={
-          <Grid container>
-            <Grid item xs={8} spacing={3}>
-              <Typography variant="body1">{country}</Typography>
-            </Grid>
-
-            <Grid item xs={12}>
-              {formattedBudget && (
-                <Chip
-                  size="small"
-                  label={formattedBudget}
-                  color="secondary"
-                  variant="outlined"
-                />
-              )}
-            </Grid>
-          </Grid>
-        }
       />
-      <CardContent>
+      <CardContent style={{ paddingTop: 0, paddingBottom: "1em" }}>
         <Grid container>
           <Grid item xs={11}>
             {!expanded && (

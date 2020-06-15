@@ -1,5 +1,4 @@
 import React from 'react';
-import clsx from "clsx";
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import { connect } from "react-redux";
@@ -12,6 +11,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import { Grid, colors } from "@material-ui/core";
 import { setCurrentDate } from "../actions";
+import DateListItem from "./DateListItem";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,29 +20,9 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
   },
-  avatar: {
-    width: "2rem",
-    height: "2rem",
-    fontSize: "1rem",
-    display: "inline-flex",
-    marginLeft: "1em",
-  },
-  total: {
-    color: theme.palette.getContrastText(colors.blue[500]),
-    backgroundColor: colors.blue[500],
-  },
-  upvoted: {
-    color: '#fff',
-    backgroundColor: colors.green[500],
-  },
-  downvoted: {
-    color: '#fff',
-    backgroundColor: colors.red[500],
-  },
 }));
 
-function DatesListComponent(props) {
-  const classes = useStyles();
+function _DatesList(props) {
   const { datesList } = props;
   const [selectedDate, setSelectedDate] = React.useState(null);
 
@@ -53,43 +33,16 @@ function DatesListComponent(props) {
 
   return (
     <List component="nav" dense>
-      {datesList.map(({ day_date, total, upvoted, downvoted, plain }) => (
+      {datesList.map((item) => (
         <ListItem
-          key={day_date}
+          key={item.day_date}
           button
-          selected={selectedDate === day_date}
-          onClick={() => handleListItemClick(day_date)}
+          selected={selectedDate === item.day_date}
+          onClick={() => handleListItemClick(item.day_date)}
         >
           <ListItemText
             primary={
-              <Grid container alignItems="center">
-                <Grid item xs={5}>
-                  <Typography align="center" display="block">{day_date}</Typography>
-                </Grid>
-                <Grid item xs={7}>
-                  <Avatar
-                    className={clsx(classes.avatar, classes.total)}
-                    sizes="1"
-                  >
-                    {total}
-                  </Avatar>
-                  <Avatar
-                    className={clsx(classes.avatar, classes.upvoted)}
-                    sizes="1"
-                  >
-                    {upvoted}
-                  </Avatar>
-                  <Avatar
-                    className={clsx(classes.avatar, classes.downvoted)}
-                    sizes="1"
-                  >
-                    {downvoted}
-                  </Avatar>
-                  <Avatar className={clsx(classes.avatar)} sizes="1">
-                    {plain}
-                  </Avatar>
-                </Grid>
-              </Grid>
+              <DateListItem itemInfo={item} />
             }
           />
         </ListItem>
@@ -103,7 +56,7 @@ const DatesList = connect(
   (dispatch) => ({
     setDateFilter: (date) => dispatch(setCurrentDate(date)),
   })
-)(DatesListComponent);
+)(_DatesList);
 
 function Pagination(props) {
   const { totalItems, page, setPage, rowsPerPage, setRowsPerPage } = props;

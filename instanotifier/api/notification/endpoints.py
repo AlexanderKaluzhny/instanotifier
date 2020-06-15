@@ -19,6 +19,7 @@ from .serializers import (
 )
 
 from .search import NotificationSearchViewSet
+from .filters import NotificationFilter
 
 
 class SearchMixin(object):
@@ -55,16 +56,7 @@ class NotificationViewSet(SearchMixin,
     serializer_class = RssNotificationSerializer
     pagination_class = PaginationSettings
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = {
-        "published_parsed": [
-            "date"
-        ],  # filtering datetime using the __date lookup function
-        "rating": ["exact"],
-    }
-
-    # TODO: custom logic for excluding of downvoted RssNotifications.
-    # TODO: save current date filtered to highlight it on the page
-    # if "published_parsed__date" in self.request.query_params:
+    filterset_class = NotificationFilter
 
     def _get_rating_value(self):
         """ Get the rating value from the request. """

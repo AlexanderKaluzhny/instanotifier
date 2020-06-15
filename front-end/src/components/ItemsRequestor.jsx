@@ -35,6 +35,7 @@ export default connect(
     urlParams: {
       page: state.filters.currentPage,
       published_parsed__date: state.filters.currentDate,
+      exclude_downvoted: state.filters.hideDownvoted
     }
   }),
   dispatch => ({

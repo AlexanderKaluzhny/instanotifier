@@ -66,6 +66,7 @@ class RssNotification(models.Model):
     country = models.CharField(max_length=64)
 
     created_on = models.DateTimeField("Created on", auto_now_add=True)
+    modified_on = models.DateTimeField("Modified on", auto_now=True)
 
     objects = RssNotificationQuerySet.as_manager()
 

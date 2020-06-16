@@ -1,3 +1,4 @@
+from copy import deepcopy
 import hashlib
 from bs4 import BeautifulSoup
 
@@ -20,17 +21,22 @@ def _compute_entry_id_hash(entry_id):
     return hashlib.md5(entry_id.encode("utf-8")).hexdigest()
 
 
-class RssNotificationSerializer(serializers.ModelSerializer):
+class RssNotificationCreateSerializer(serializers.ModelSerializer):
+    """
+    Creates the RssNotification from the data provided by Feed parser.
+    Evaluates the necessary fields deriving it from the data.
+    """
     class Meta:
         model = RssNotification
         fields = ["entry_id", "title", "summary", "link", "published_parsed", "country", "internal_id"]
 
     def to_internal_value(self, data):
-        data['entry_id'] = data['id']
-        data['country'] = 'TBD'  # it is a derived field, we will set it based on "summary" field
-        data['internal_id'] = 'TBD'  # it is a derived field, we will set it based on "entry_id" field
-        data = super().to_internal_value(data)
-        return data
+        new_data = deepcopy(data)
+        new_data['entry_id'] = data['id']
+        new_data['country'] = 'TBD'  # it is a derived field, we will set it based on "summary" field
+        new_data['internal_id'] = 'TBD'  # it is a derived field, we will set it based on "entry_id" field
+        new_data = super().to_internal_value(new_data)
+        return new_data
 
     def validate_summary(self, value):
         summary = html.clean_html(value)
@@ -41,3 +47,9 @@ class RssNotificationSerializer(serializers.ModelSerializer):
         validated_data["country"] = _parse_country(summary)
         validated_data["internal_id"] = _compute_entry_id_hash(validated_data["entry_id"])
         return validated_data
+
+
+class RssNotificationUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RssNotification
+        fields = ["entry_id", "title", "summary", "link", "published_parsed", "country", "internal_id"]

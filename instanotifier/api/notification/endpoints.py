@@ -98,4 +98,5 @@ class NotificationDatesListEndpoint(ListAPIView):
         """
         Returns the queryset containing entries having the date and rating stats fields.
         """
-        return selectors.daily_posted_ratings()
+        date = self.request.query_params.get("date", None)
+        return selectors.daily_posted_ratings(date=date)

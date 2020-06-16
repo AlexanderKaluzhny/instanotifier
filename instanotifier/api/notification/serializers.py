@@ -10,12 +10,13 @@ class RssNotificationSerializer(serializers.ModelSerializer):
     source_name = serializers.SerializerMethodField()
     short_summary = serializers.SerializerMethodField()
     budget = serializers.SerializerMethodField()
+    day_date = serializers.DateTimeField(source="published_parsed", format="%Y-%m-%d")
 
     class Meta:
         model = RssNotification
         fields = [
             "id", "title", "summary", "link", "published_parsed", "rating", "country", "source_name",
-            "short_summary", "budget",
+            "short_summary", "budget", "day_date"
         ]
         extra_kwargs = {"published_parsed": {"format": "%H:%M:%S %Y-%m-%d"}}
 

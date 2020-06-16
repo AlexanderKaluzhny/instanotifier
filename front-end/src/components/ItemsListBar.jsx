@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { useSelector } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Pagination from "./Pagination";
 import { Box, Grid } from "@material-ui/core";

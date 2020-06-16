@@ -3,6 +3,7 @@ from django.core.validators import EMPTY_VALUES
 
 from instanotifier.notification.models import Ratings
 
+
 class RatingDownvotedFilter(filters.BooleanFilter):
     def filter(self, qs, value):
         if not value or value in EMPTY_VALUES:

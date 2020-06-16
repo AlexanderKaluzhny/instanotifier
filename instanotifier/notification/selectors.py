@@ -5,13 +5,16 @@ from django.db.models.expressions import F
 from .models import RssNotification, Ratings
 
 
-def daily_posted_ratings():
+def daily_posted_ratings(date=None):
+    initial_qs = RssNotification.objects.annotate(
+        day_date=Trunc("published_parsed", "day", output_field=DateField()),
+        plain_field=F("published_parsed"),
+    )
+    if date:
+        initial_qs = initial_qs.filter(day_date=date)
+
     qs = (
-        RssNotification.objects.annotate(
-            day_date=Trunc("published_parsed", "day", output_field=DateField()),
-            plain_field=F("published_parsed"),
-        )
-        .values("day_date")
+        initial_qs.values("day_date")
         .distinct()
         .filter(plain_field__isnull=False)
         .order_by("-day_date")
@@ -59,5 +62,3 @@ def countries_daily_posted():
         .order_by("country", "-day_date")
     )
     return qs
-
-

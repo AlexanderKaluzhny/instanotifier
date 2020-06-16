@@ -36,20 +36,20 @@ export default function ItemCard(props) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  const { id, title, summary, short_summary, country, budget, rating, source_name } = props.item;
   const { onRatingChange } = props;
+  const { id, title, summary, short_summary, country, budget, rating, source_name } = props.item;
   const formattedBudget = (!!budget.name ? `${budget.name}: ${budget.value}` : "");
 
   const getUpvoteButton = () => {
     if (rating === 1) {
       return (
-        <IconButton onClick={() => onRatingChange(id, "default")}>
+        <IconButton onClick={() => onRatingChange("default")}>
           <ThumbUpIcon color="primary" />
         </IconButton>
       );
     }
     return (
-      <IconButton onClick={() => onRatingChange(id, "upvoted")}>
+      <IconButton onClick={() => onRatingChange("upvoted")}>
         <ThumbUpOutlinedIcon />
       </IconButton>
     );
@@ -58,14 +58,14 @@ export default function ItemCard(props) {
   const getDownvoteButton = () => {
     if (rating === -1) {
       return (
-        <IconButton onClick={() => onRatingChange(id, "default")}>
+        <IconButton onClick={() => onRatingChange("default")}>
           <ThumbDownIcon color="primary" />
         </IconButton>
       );
     }
 
     return (
-      <IconButton onClick={() => onRatingChange(id, "downvoted")}>
+      <IconButton onClick={() => onRatingChange("downvoted")}>
         <ThumbDownOutlinedIcon />
       </IconButton>
     );

@@ -7,9 +7,8 @@ from instanotifier.notification.tests.utils import (
     create_rssnotifications_from_test_feed,
 )
 
-from instanotifier.api.serializers import (
+from instanotifier.api.notification.serializers import (
     RssNotificationSerializer,
-    RssNotificationDateSerializer,
 )
 
 

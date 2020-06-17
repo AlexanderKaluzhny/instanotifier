@@ -21,13 +21,13 @@ function App() {
         <DatesRequestor />
         <Layout>
           <Grid container spacing={1} style={{ minHeight: "70vh" }}>
-            <Grid item lg={12}>
+            <Grid item xs={12}>
               <ItemsListBar />
             </Grid>
-            <Grid item lg={8}>
+            <Grid item xs={7} sm={9} md={8}>
               <ItemsList />
             </Grid>
-            <Grid item lg={4}>
+            <Grid item xs={5} sm={3} md={4}>
               <DatesList />
             </Grid>
           </Grid>

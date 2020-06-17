@@ -102,12 +102,12 @@ export default function ItemCard(props) {
     <Card>
       <Box p={2}>
         <Grid container>
-          <Grid item xs={3}>
+          <Grid item xs={6} sm={3}>
             <Typography align="left" variant="body1">
               {country}
             </Typography>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={6} sm={3}>
             {formattedBudget && (
               <Chip
                 size="small"
@@ -117,7 +117,7 @@ export default function ItemCard(props) {
               />
             )}
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <Typography align="right">{source_name}</Typography>
           </Grid>
         </Grid>

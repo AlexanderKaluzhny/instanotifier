@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from django.views import defaults as default_views
 
 from instanotifier.feedsource import urls as feedsource_urls
@@ -14,12 +14,10 @@ from instanotifier.feedsource import urls as feedsource_urls
 schema_view = schemas.get_schema_view(title="InstaNotifier stored notifications API", description="InstaNotifier stored notifications API")
 
 urlpatterns = [
-    url(r'^', include(feedsource_urls)),
-    url(r'^feeds/', include(feedsource_urls)),
-    url(r'^home/$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
-
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, admin.site.urls),
+
+    url(r'^feeds/', include(feedsource_urls)),
 
     # User management
     url(r'^users/', include('instanotifier.users.urls', namespace='users')),
@@ -30,7 +28,9 @@ urlpatterns = [
     url(r'^api/v1/', include('instanotifier.api.urls', namespace='api-v1')),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^react-index/', TemplateView.as_view(template_name='react/index.html') ),
+
+    url(r'^react-index/', TemplateView.as_view(template_name='react/index.html'), name="react-notifications-list" ),
+    url(r'^$', RedirectView.as_view(pattern_name="react-notifications-list")),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -21,18 +21,18 @@ function ItemsListBar(props) {
   return (
     <Card className={classes.card}>
       <Grid container spacing={1} alignItems="center" justify="space-between">
-        <Grid item xs={5}>
+        <Grid item xs={12} md={5} lg={5}>
           <Pagination />
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs={4} md={2} lg={2}>
           <ShowOnlyFilterSelect />
         </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={3} sm={2} lg={1}>
           <Typography>
             <b>{`Visible: ${visibleCount}`}</b>
           </Typography>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={5} sm={4} md={3} lg={4}>
           {selectedDateItem && <DateListItem itemInfo={selectedDateItem} />}
         </Grid>
       </Grid>

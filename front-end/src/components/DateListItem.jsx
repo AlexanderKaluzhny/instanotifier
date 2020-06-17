@@ -12,7 +12,15 @@ const useStyles = makeStyles((theme) => ({
     height: "2rem",
     fontSize: "1rem",
     display: "inline-flex",
-    marginLeft: "1em",
+    [theme.breakpoints.up("lg")]: {
+      marginLeft: "1em",
+    }
+  },
+  avatarGroup: {
+    [theme.breakpoints.down("md")]: {
+      display: "flex",
+      justifyContent: "space-between"
+    }
   },
   total: {
     color: theme.palette.getContrastText(colors.blue[500]),
@@ -47,12 +55,12 @@ export default function DateListItem(props) {
   
   return (
     <Grid container alignItems="center">
-      <Grid item xs={5}>
+      <Grid item xs={12} md={5}>
         <Typography align="center" display="block">
           {day_date}
         </Typography>
       </Grid>
-      <Grid item xs={7}>
+      <Grid item xs={12} md={7} className={classes.avatarGroup}>
         <AvatarTooltipped title="Total" className={classes.total}>
           {total}
         </AvatarTooltipped>

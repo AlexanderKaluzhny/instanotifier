@@ -64,6 +64,7 @@ class RssNotification(models.Model):
         choices=Ratings.as_choices(), default=Ratings.DEFAULT
     )
     country = models.CharField(max_length=64)
+    is_bookmarked = models.BooleanField(default=False)
 
     created_on = models.DateTimeField("Created on", auto_now_add=True)
     modified_on = models.DateTimeField("Modified on", auto_now=True)

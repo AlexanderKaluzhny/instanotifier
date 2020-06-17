@@ -85,6 +85,16 @@ class NotificationViewSet(SearchMixin,
 
         return Response(serializer.data)
 
+    @action(detail=True, methods=['patch'])
+    def bookmark(self, request, pk):
+        instance = self.get_object()
+
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
+
 
 class NotificationDatesListEndpoint(ListAPIView):
     """

@@ -20,7 +20,7 @@ function App() {
         <ItemsRequestor />
         <DatesRequestor />
         <Layout>
-          <Grid container spacing={1}>
+          <Grid container spacing={1} style={{ minHeight: "70vh" }}>
             <Grid item lg={12}>
               <ItemsListBar />
             </Grid>

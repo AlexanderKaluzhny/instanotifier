@@ -22,6 +22,7 @@ def daily_posted_ratings(date=None):
         .annotate(upvoted=Count("id", filter=Q(rating=Ratings.UPVOTED)))
         .annotate(downvoted=Count("id", filter=Q(rating=Ratings.DOWNVOTED)))
         .annotate(plain=Count("id", filter=Q(rating=Ratings.DEFAULT)))
+        .annotate(bookmarked=Count("id", filter=Q(is_bookmarked=True)))
     )
 
     return qs

@@ -14,7 +14,8 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
 import StarBorderOutlinedIcon from '@material-ui/icons/StarBorderOutlined';
-import { Grid, Box } from "@material-ui/core";
+import StarOutlinedIcon from '@material-ui/icons/StarOutlined';
+import { Grid, Box, colors } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   expand: {
@@ -36,8 +37,18 @@ export default function ItemCard(props) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  const { onRatingChange } = props;
-  const { id, title, summary, short_summary, country, budget, rating, source_name } = props.item;
+  const { onRatingChange, onBookmarkChange } = props;
+  const {
+    id,
+    title,
+    summary,
+    short_summary,
+    country,
+    budget,
+    rating,
+    source_name,
+    is_bookmarked,
+  } = props.item;
   const formattedBudget = (!!budget.name ? `${budget.name}: ${budget.value}` : "");
 
   const getUpvoteButton = () => {
@@ -67,6 +78,22 @@ export default function ItemCard(props) {
     return (
       <IconButton onClick={() => onRatingChange("downvoted")}>
         <ThumbDownOutlinedIcon />
+      </IconButton>
+    );
+  }
+
+  const getBookmarkButton = () =>{
+    if (is_bookmarked) {
+      return (
+        <IconButton onClick={() => onBookmarkChange(false)}>
+          <StarOutlinedIcon style={{ color: colors.amber[500] }} />
+        </IconButton>
+      );
+    }
+
+    return (
+      <IconButton onClick={() => onBookmarkChange(true)}>
+        <StarBorderOutlinedIcon />
       </IconButton>
     );
   }
@@ -101,9 +128,7 @@ export default function ItemCard(props) {
           <React.Fragment>
             {getUpvoteButton()}
             {getDownvoteButton()}
-            <IconButton>
-              <StarBorderOutlinedIcon />
-            </IconButton>
+            {getBookmarkButton()}
           </React.Fragment>
         }
         title={<Typography variant="h6">{title}</Typography>}

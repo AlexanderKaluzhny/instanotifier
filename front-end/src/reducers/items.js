@@ -21,6 +21,15 @@ const items = (state = initialState, action) => {
           item.id === action.id ? { ...item, rating: action.rating } : item
         ),
       };
+    case itemActions.SET_BOOKMARK:
+      return {
+        ...state,
+        listChunk: state.listChunk.map((item) =>
+          item.id === action.id
+            ? { ...item, is_bookmarked: action.isBookmarked }
+            : item
+        ),
+      };
     default:
       return state;
   }

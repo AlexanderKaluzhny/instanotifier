@@ -16,6 +16,7 @@ class RssNotificationSerializer(serializers.ModelSerializer):
         model = RssNotification
         fields = [
             "id", "title", "summary", "link", "published_parsed", "rating", "country", "source_name",
+            "is_bookmarked",
             "short_summary", "budget", "day_date"
         ]
         extra_kwargs = {"published_parsed": {"format": "%H:%M:%S %Y-%m-%d"}}

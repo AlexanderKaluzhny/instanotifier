@@ -4,10 +4,10 @@ import Typography from '@material-ui/core/Typography';
 import { Box, Grid } from "@material-ui/core";
 import ItemCard from "./ItemCard";
 import * as requests from "../utils/requests";
-import { setItemRating, updateDateItem } from "../actions";
+import { setItemRating, updateDateItem, setItemBookmark } from "../actions";
 
 function ItemsList(props) {
-  const { itemsList, onRatingChange } = props;
+  const { itemsList, onRatingChange, onBookmarkChange } = props;
 
   return (
     <React.Fragment>
@@ -17,6 +17,7 @@ function ItemsList(props) {
             <ItemCard
               item={item}
               onRatingChange={(newRating) => onRatingChange(item, newRating)}
+              onBookmarkChange={(isBookmarked) => onBookmarkChange(item, isBookmarked)}
             />
           </Box>
         ))}
@@ -29,7 +30,7 @@ const requestUpdatedDate = (date) => () => {
 }
 
 function _ItemsListWithApi(props) {  
-  const { updateItemRating, setDateItemContent } = props;
+  const { updateItemRating, setDateItemContent, updateItemBookmark } = props;
 
   const handleRatingChange = (item, newRating) => {
     requests
@@ -43,9 +44,26 @@ function _ItemsListWithApi(props) {
       .then(jsonList => setDateItemContent(jsonList[0]));
   }
 
+  const handleBookmarkChange = (item, bValue) => {
+    requests.patch(`/api/v1/notifications/${item.id}/bookmark/`, {
+      is_bookmarked: bValue,
+    })
+    .then(requests.getResponseJsonOrError)
+    .then((json) => updateItemBookmark(json.id, json.is_bookmarked))
+    .then(requestUpdatedDate(item.day_date))
+    .then(requests.getResponseJsonOrError)
+    .then(jsonList => setDateItemContent(jsonList[0]));
+  }
+
   const { itemsList } = props;
 
-  return <ItemsList onRatingChange={handleRatingChange} itemsList={itemsList} />
+  return (
+    <ItemsList
+      onRatingChange={handleRatingChange}
+      onBookmarkChange={handleBookmarkChange}
+      itemsList={itemsList}
+    />
+  );
 }
 
 const ItemsListWithApi = connect(
@@ -54,6 +72,7 @@ const ItemsListWithApi = connect(
   }),
   (dispatch) => ({
     updateItemRating: (id, rating) => dispatch(setItemRating(id, rating)),
+    updateItemBookmark: (id, isBookmarked) =>  dispatch(setItemBookmark(id, isBookmarked)),
     setDateItemContent: (dateItem) => dispatch(updateDateItem(dateItem)),
   })
 )(_ItemsListWithApi);

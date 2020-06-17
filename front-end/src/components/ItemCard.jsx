@@ -128,7 +128,7 @@ export default function ItemCard(props) {
               </Typography>
             )}
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={1} style={{ textAlign: "center" }}>
             <IconButton
               className={clsx(classes.expand, {
                 [classes.expandOpen]: expanded,

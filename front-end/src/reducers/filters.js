@@ -4,6 +4,7 @@ const initialState = {
   currentPage: 1,
   currentDate: null,
   hideDownvoted: true,
+  showOnly: "all",
 };
 
 const filters = (state = initialState, action) => {
@@ -25,6 +26,12 @@ const filters = (state = initialState, action) => {
         currentPage: 1,
         hideDownvoted: action.hideDownvoted,
       };
+    case filtersActions.SET_SHOW_ONLY:
+      return {
+        ...state, 
+        currentPage: 1,
+        showOnly: action.showOnly
+      }
     default:
       return state;
   }

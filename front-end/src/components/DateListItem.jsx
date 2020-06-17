@@ -62,7 +62,7 @@ export default function DateListItem(props) {
         <AvatarTooltipped title="Downvoted" className={classes.downvoted}>
           {downvoted}
         </AvatarTooltipped>
-        <AvatarTooltipped title="Not processed" className="">
+        <AvatarTooltipped title="Without rating" className="">
           {plain}
         </AvatarTooltipped>
       </Grid>

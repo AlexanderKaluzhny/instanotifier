@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import Pagination from "./Pagination";
 import { Box, Grid } from "@material-ui/core";
 import DateListItem from "./DateListItem";
+import ShowOnlyFilterSelect from "./ShowOnlyFilter";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -20,8 +21,11 @@ function ItemsListBar(props) {
   return (
     <Card className={classes.card}>
       <Grid container spacing={1} alignItems="center" justify="space-between">
-        <Grid item xs={7}>
+        <Grid item xs={5}>
           <Pagination />
+        </Grid>
+        <Grid item xs={2}>
+          <ShowOnlyFilterSelect />
         </Grid>
         <Grid item xs={1}>
           <Typography>

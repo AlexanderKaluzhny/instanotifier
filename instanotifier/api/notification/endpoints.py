@@ -5,7 +5,6 @@ from rest_framework.decorators import action
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -19,7 +18,7 @@ from .serializers import (
 )
 
 from .search import NotificationSearchViewSet
-from .filters import NotificationFilter
+from .filters import NotificationFilter, DatesFilter
 
 
 class SearchMixin(object):
@@ -93,6 +92,8 @@ class NotificationDatesListEndpoint(ListAPIView):
     """
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer,)
     serializer_class = RssNotificationDateSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = DatesFilter
 
     def get_queryset(self):
         """

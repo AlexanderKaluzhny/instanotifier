@@ -45,7 +45,7 @@ export default function Layout({ children }) {
         </Toolbar>
       </AppBar>
       <Container>
-        <Box my={4}>{children}</Box>
+        <Box my={2}>{children}</Box>
       </Container>
       <ScrollTop>
         <Fab color="secondary" size="small">

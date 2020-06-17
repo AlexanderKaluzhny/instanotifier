@@ -2,6 +2,9 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import { connect } from "react-redux";
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import TablePagination from '@material-ui/core/TablePagination';
 import List from '@material-ui/core/List';
@@ -20,9 +23,15 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
   },
+  item: {
+    borderBottom: `1px solid ${theme.palette.divider}`
+  },
+  cardWrapper: {
+  }
 }));
 
 function _DatesList(props) {
+  const classes = useStyles();
   const { datesList } = props;
   const [selectedDate, setSelectedDate] = React.useState(null);
 
@@ -37,6 +46,7 @@ function _DatesList(props) {
         <ListItem
           key={item.day_date}
           button
+          className={classes.item}
           selected={selectedDate === item.day_date}
           onClick={() => handleListItemClick(item.day_date)}
         >
@@ -84,12 +94,13 @@ function Pagination(props) {
 }
 
 export default function PaginatedDatesList(props) {
+  const classes = useStyles();
   const { datesList } = useSelector(state => state.dates);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(31);
 
   return (
-    <React.Fragment>
+    <Card className={classes.cardWrapper}>
       <DatesList
         datesList={datesList.slice(
           page * rowsPerPage,
@@ -103,6 +114,6 @@ export default function PaginatedDatesList(props) {
         rowsPerPage={rowsPerPage}
         setRowsPerPage={setRowsPerPage}
       />
-    </React.Fragment>
+    </Card>
   );
 }

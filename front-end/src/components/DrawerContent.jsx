@@ -5,7 +5,7 @@ import SwitchDownvoted from "./SwitchDownvoted";
 export default function DrawerContent(props) {
   return (
     <React.Fragment>
-      <Grid container alignItems="center">
+      <Grid container alignItems="center" justify="center">
         <Grid item>
           <Typography>Hide Downvoted</Typography>
         </Grid>

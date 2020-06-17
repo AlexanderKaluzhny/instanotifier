@@ -2,6 +2,7 @@ import React from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from "clsx";
 import Typography from "@material-ui/core/Typography";
+import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from "@material-ui/core/Avatar";
 import { Grid, colors } from "@material-ui/core";
 
@@ -29,6 +30,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function AvatarTooltipped({ children, title, className }) {
+  const classes = useStyles();
+  return (
+    <Tooltip title={title} arrow>
+      <Avatar className={clsx(classes.avatar, className)} sizes="1">
+        {children}
+      </Avatar>
+    </Tooltip>
+  );
+}
+
 export default function DateListItem(props) {
   const classes = useStyles();
   const { day_date, total, upvoted, downvoted, plain } = props.itemInfo;
@@ -41,18 +53,18 @@ export default function DateListItem(props) {
         </Typography>
       </Grid>
       <Grid item xs={7}>
-        <Avatar className={clsx(classes.avatar, classes.total)} sizes="1">
+        <AvatarTooltipped title="Total" className={classes.total}>
           {total}
-        </Avatar>
-        <Avatar className={clsx(classes.avatar, classes.upvoted)} sizes="1">
+        </AvatarTooltipped>
+        <AvatarTooltipped title="Upvoted" className={classes.upvoted}>
           {upvoted}
-        </Avatar>
-        <Avatar className={clsx(classes.avatar, classes.downvoted)} sizes="1">
+        </AvatarTooltipped>
+        <AvatarTooltipped title="Downvoted" className={classes.downvoted}>
           {downvoted}
-        </Avatar>
-        <Avatar className={clsx(classes.avatar)} sizes="1">
+        </AvatarTooltipped>
+        <AvatarTooltipped title="Not processed" className="">
           {plain}
-        </Avatar>
+        </AvatarTooltipped>
       </Grid>
     </Grid>
   );

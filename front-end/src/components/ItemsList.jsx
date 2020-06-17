@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { useSelector } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import { Box, Grid } from "@material-ui/core";
 import ItemCard from "./ItemCard";
@@ -14,7 +13,7 @@ function ItemsList(props) {
     <React.Fragment>
       {itemsList &&
         itemsList.map((item) => (
-          <Box my={1} key={item.id}>
+          <Box mb={1} key={item.id}>
             <ItemCard
               item={item}
               onRatingChange={(newRating) => onRatingChange(item, newRating)}

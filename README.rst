@@ -1,8 +1,8 @@
 InstaNotifier
 =============
 
-Checking for new feed entries periodically, accumulates new entries and sends the notifications.
-UI is implemented in React.js. Allows rating, bookmarking, filtering, searching.
+Checks for the RSS feed periodically, accumulates new entries and sends the notifications.
+The notifications listing UI is implemented in React.js. Also allows rating, bookmarking, filtering, searching.
 (UI demo is deployed to Heroku free dyno `instanotifier-react.herokuapp.com`_)
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
@@ -49,8 +49,7 @@ Implemented functionality
 * Modular architecture
 * RssFetcher → RssParser → RssNotification model → Email publisher
 * FeedSource settings application
-* Using of FeedSource instance data in the RssFetcher and Email publisher
-* Celery tasks with the hardcoded schedule to run the fetching.
+* Celery tasks with the hardcoded schedule to run the fetching
 * Integration with Mailgun (out of box from the cookiecutter project template)
 * REST API for listing, rating, searching, filtering of stored entries
 * UI for listing of saved RssNotifications. Allows rating of items, searching, filtering by date

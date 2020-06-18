@@ -1,18 +1,22 @@
 InstaNotifier
 =============
 
-Checking for new feed entries periodically, accumulates new entries and sends the notifications.
-Includes API based UI listing all the saved entries. UI allows rating, searching, filtering (deployed to Heroku free dyno `instanotifier.herokuapp.com`_)
+Checks the RSS feed periodically, accumulates new entries and sends the notifications.
+The UI for listing of saved entries is implemented in React.js. Also allows rating, bookmarking, filtering, searching.
+(UI demo is deployed to Heroku free dyno `instanotifier-react.herokuapp.com`_)
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/
      :alt: Built with Cookiecutter Django
 
+=======
 
-:Python: 3.7
-:Django: 2.2
-:License: MIT
-
+* Python: 3.7
+* Django: 2.2
+* React.js
+* Celery
+* ElasticSearch
+* PostgreSQL
 
 Introductory Documentation
 ==========================
@@ -29,13 +33,13 @@ Components
 
 
 :Fetcher: Gets data from the particular source (RSS, API)
-:Parser: Formalize the data fetched from the particular source into some model instance
+:Parser: Serialize the data fetched from the particular source into some model instance
 :Filter: Having the set of new data entries, filters out the existing ones
 :Model: Saves the data into the db
 :Publisher: Sends out the data into the particular channel (email, fb messenger, etc.)
-:FeedSource Settings: The settings application for wiring up the source to fetch from, target to publish notifications to, interval with which to fetch data, and on/off switcher
-:API: REST API exposing access to stored data
-:UI: Displays the stored entries, supports filtering and searching. API based
+:FeedSource Settings: The settings application for wiring up the source to fetch from to the target to publish notifications to
+:API: REST API providing access to stored data
+:UI: Displays the stored entries, supports filtering and searching
 
 Implemented functionality
 -------------------------
@@ -43,48 +47,34 @@ Implemented functionality
 * Modular architecture
 * RssFetcher → RssParser → RssNotification model → Email publisher
 * FeedSource settings application
-* Using of FeedSource instance data in the RssFetcher and Email publisher
-* Tests
-* User registration, integration with Mailgun (out of box from the cookiecutter project template)
-* Ansible deployment scripts for VPS (Located in `separate repository`_)
-
+* Celery tasks with the hardcoded schedule to run the fetching
+* Integration with Mailgun (out of box from the cookiecutter project template)
 * REST API for listing, rating, searching, filtering of stored entries
-* API based UI listing all the saved RssNotifications. Allows rating of items, searching, filtering by date
-* UI is deployed to Heroku `instanotifier.herokuapp.com`_ (It is a free dyno, so wait a little for it to wake up)
+* UI for listing of saved RssNotifications (rss feed entries). Allows rating of items, searching, filtering by date
+* The demo of UI is deployed to Heroku `instanotifier-react.herokuapp.com`_ (It is a free dyno, so wait a little for it to wake up).  [NOTE: That deployed instance doesn't fetch any data from the sources, because the Celery is not deployed there. It only shows the already preloaded data.]
 
-.. _`separate repository`: https://github.com/AlexanderKaluzhny/deployment-scripts/tree/v0.7
-.. _`instanotifier.herokuapp.com`: https://instanotifier.herokuapp.com/api/v1/?format=html
-
-Possible features to be added
------------------------------
-
-* Make a relation of RssNotification to the particular user.
-* Showing only user-owned content.
-* Allow sending of emails to the verified user email only
-* Run Celery tasks in separate queues
-* Send logs to log aggregator
-* Send errors to Sentry
-* Monitor server metrics
-* Cache existing entry ids in the Redis to avoid requests to db every time the feed is fetched
-* Using API of specific source platform, request additional information about particular source entry
-* Getting updates on already saved entries
-* [Implemented] Expose access to saved entries through REST API
-* Use non-blocking I/O for fetching of RSS
+.. _`instanotifier-react.herokuapp.com`: https://instanotifier-react.herokuapp.com
 
 
 Basic Commands
 --------------
 
-Setting Up Your Users
-^^^^^^^^^^^^^^^^^^^^^
+Building the front-end
+^^^^^^^^^^^^^^^^^^^^^^
 
-* To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
+To build the dev environment:
 
-* To create an **superuser account**, use this command::
+.. code-block:: bash
 
-    $ python manage.py createsuperuser
+    cd front-end
+    npm start
 
-For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
+To build the production environment:
+
+.. code-block:: bash
+
+    cd front-end
+    npm run build
 
 
 Celery
@@ -106,16 +96,6 @@ Running tests
   $ ./manage.py test
 
 
-Live reloading and Sass CSS compilation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Moved to `Live reloading and SASS compilation`_.
-
-.. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
-
-
-
-
 Email Server
 ^^^^^^^^^^^^
 
@@ -128,49 +108,14 @@ Please check `cookiecutter-django Docker documentation`_ for more details how to
 
 With MailHog running, to view messages that are sent by your application, open your browser and go to ``http://127.0.0.1:8025``
 
+.. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 
 
 
-Deployment
-----------
-
-The following details how to deploy this application.
-
+Local Dev Setup
+----------------
 
 Starting up with `tmuxinator` locally
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Just use the ``tmuxinator-inr.yml`` script provided.
-
-
-VPS Server using Ansible and Fabric
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Scripts are located `in this repository`_.
-
-.. _`in this repository`: https://github.com/AlexanderKaluzhny/deployment-scripts
-
-
-Heroku
-^^^^^^
-
-See detailed `cookiecutter-django Heroku documentation`_.
-
-.. _`cookiecutter-django Heroku documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-on-heroku.html
-
-
-
-Docker
-^^^^^^
-
-See detailed `cookiecutter-django Docker documentation`_.
-
-.. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
-
-
-Settings
---------
-
-Moved to settings_.
-
-.. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
+Using the ``tmuxinator-inr.yml`` script provided, follow the TODOs in the script to set it up for your environment.

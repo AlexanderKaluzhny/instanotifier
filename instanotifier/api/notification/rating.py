@@ -58,7 +58,16 @@ class CheckboxExcludeDownvotedNotification(object):
 
 
 class RatingManager(object):
-    """ Manages the rating logic for RssNotifications """
+    """
+    Manages the rating logic for RssNotifications
+
+    @cached_property
+    def rating_manager(self):
+        return RatingManager()
+
+    # custom logic for excluding of downvoted RssNotifications.
+    queryset = self.rating_manager.filter_queryset(self.request, queryset, self)
+    """
 
     @cached_property
     def checkbox(self):

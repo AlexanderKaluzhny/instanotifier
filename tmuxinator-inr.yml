@@ -1,4 +1,8 @@
-# NOTE: move the file to ~/.tmuxinator/inr.yml
+# TODO: move the file to ~/.tmuxinator/inr.yml
+# TODO: install the virtualenv, and correct the `pre_window` setting to your way of activating the venv
+# TODO: correct the `root` setting to point to instanotifier sources location
+
+# ~/.tmuxinator/inr.yml
 
 name: instanotifier
 root: ~/dev/projects/inr/instanotifier
@@ -42,4 +46,8 @@ windows:
         - #empty
         - ./manage.py runserver
         - celery -A instanotifier.taskapp worker -B -l info
+  - front-end:
+      panes:
+        - cd front-end;
+        - cd front-end; sudo sysctl fs.inotify.max_user_watches=524288; npm start
   - mailhog: ./mailhog

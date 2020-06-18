@@ -1,5 +1,5 @@
 from instanotifier.parser.rss.parser import RssParser
-from instanotifier.notification.views import create_rssnotification_instances
+from instanotifier.notification.services import create_rssnotification_instances
 
 
 def parse(feed):

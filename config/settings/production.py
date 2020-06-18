@@ -52,16 +52,6 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['example.com'])
 
 INSTALLED_APPS += ('gunicorn', )
 
-
-# STORAGE CONFIGURATION
-# ------------------------------------------------------------------------------
-# Uploaded Media Files
-# ------------------------
-# See: http://django-storages.readthedocs.io/en/latest/index.html
-INSTALLED_APPS += (
-    'storages',
-)
-
 # Static Assets
 # ------------------------
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

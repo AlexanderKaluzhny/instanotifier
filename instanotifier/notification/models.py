@@ -1,13 +1,6 @@
-import hashlib
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from django.db.models.functions import Trunc
-from django.db.models import DateField, Count, Q
-from django.db.models.expressions import F
-
-from instanotifier.notification.utils import html
 
 """
 RSS_FEED_ENTRY_FIELDS = [
@@ -25,55 +18,26 @@ class Ratings(object):
     UPVOTED = 1
     DOWNVOTED = -1
 
-    DEFAULT_READABLE = "default"
-    UPVOTED_READABLE = "upvoted"
-    DOWNVOTED_READABLE = "downvoted"
-
     @classmethod
     def as_choices(cls):
         return (
-            (cls.DEFAULT, cls.DEFAULT_READABLE),
-            (cls.UPVOTED, cls.UPVOTED_READABLE),
-            (cls.DOWNVOTED, cls.DOWNVOTED_READABLE),
+            (cls.DEFAULT, "default"),
+            (cls.UPVOTED, "upvoted"),
+            (cls.DOWNVOTED, "downvoted"),
         )
 
     @classmethod
-    def as_readables_dict(cls):
+    def as_display_dict(cls):
         return {v: k for k, v in cls.as_choices()}
 
     @classmethod
-    def get_value_or_none(self, readable):
-        return self.as_readables_dict().get(readable, None)
+    def get_value_or_none(self, display_value):
+        return self.as_display_dict().get(display_value, None)
 
 
 class RssNotificationQuerySet(models.QuerySet):
     def not_downvoted(self):
         return self.exclude(rating=Ratings.DOWNVOTED)
-
-    def get_dates_stats(self):
-        """
-        Returns the queryset containing entries having the date field and rating stats.
-        """
-
-        # NOTE: order_by influences the distinct() results here
-        date_times = (
-            RssNotification.objects.annotate(
-                published_parsed_date=Trunc(
-                    "published_parsed", "day", output_field=DateField()
-                ),
-                plain_field=F("published_parsed"),
-            )
-            .values("published_parsed_date")
-            .distinct()
-            .filter(plain_field__isnull=False)
-            .order_by("-published_parsed_date")
-            .annotate(dates_count=Count("published_parsed"))
-            .annotate(upvoted=Count('rating', filter=Q(rating=Ratings.UPVOTED)))
-            .annotate(downvoted=Count('rating', filter=Q(rating=Ratings.DOWNVOTED)))
-            .annotate(plain=Count('rating', filter=Q(rating=Ratings.DEFAULT)))
-        )
-
-        return date_times
 
 
 class RssNotification(models.Model):
@@ -95,10 +59,15 @@ class RssNotification(models.Model):
     link = models.URLField(_("Link"), max_length=2083)
     published_parsed = models.DateTimeField(_("Published"))
     entry_id = models.CharField(_("Rss entry id"), max_length=2083)
+
     rating = models.SmallIntegerField(
         choices=Ratings.as_choices(), default=Ratings.DEFAULT
     )
+    country = models.CharField(max_length=64)
+    is_bookmarked = models.BooleanField(default=False)
+
     created_on = models.DateTimeField("Created on", auto_now_add=True)
+    modified_on = models.DateTimeField("Modified on", auto_now=True)
 
     objects = RssNotificationQuerySet.as_manager()
 
@@ -107,24 +76,3 @@ class RssNotification(models.Model):
 
     def __str__(self):
         return "%s %s" % (self.title, self.published_parsed)
-
-    @classmethod
-    def compute_entry_id_hash(cls, entry_id):
-        return hashlib.md5(entry_id.encode("utf-8")).hexdigest()
-
-    def evaluate_internal_id(self):
-        if self.internal_id:
-            return self.internal_id
-
-        if not self.entry_id:
-            raise ValueError("Entry_id is not specified.")
-
-        self.internal_id = self.compute_entry_id_hash(self.entry_id)
-        return self.internal_id
-
-    def save(self, *args, **kwargs):
-        self.evaluate_internal_id()
-
-        self.summary = html.clean_html(self.summary)
-
-        super().save(*args, **kwargs)

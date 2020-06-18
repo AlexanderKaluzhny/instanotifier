@@ -44,35 +44,29 @@
           <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav navbar-left">
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'home' %}">Home</a>
-              </li>
-              <li class="nav-item">
                 <a class="nav-link" href="{% url 'feedsource:list' %}">Feed Sources</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'api-v1:rssnotification-list' %}?format=html">Notifications List [API]</a>
               </li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'api-v1:rssnotification-list' %}?format=api">API</a>
+                <a class="nav-link" href="{% url 'react-notifications-list' %}">Notifications List</a>
               </li>
-              {% if request.user.is_authenticated %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
-                </li>
-              {% else %}
-                <li class="nav-item">
-                  <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
-                </li>
-                <li class="nav-item">
-                  <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
-                </li>
-              {% endif %}
+<!--              {% if request.user.is_authenticated %}-->
+<!--                <li class="nav-item">-->
+<!--                  <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                  <a class="nav-link" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>-->
+<!--                </li>-->
+<!--              {% else %}-->
+<!--                <li class="nav-item">-->
+<!--                  <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                  <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>-->
+<!--                </li>-->
+<!--              {% endif %}-->
             </ul>
           </div>
         </div>

@@ -17,8 +17,6 @@ The UI for listing of saved entries is implemented in React.js. Also allows rati
 * Celery
 * ElasticSearch
 * PostgreSQL
-* License: MIT
-
 
 Introductory Documentation
 ==========================

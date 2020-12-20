@@ -56,7 +56,6 @@ THIRD_PARTY_APPS = (
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
 
-    'bootstrap_pagination',
 )
 
 # Apps specific for this project go here.

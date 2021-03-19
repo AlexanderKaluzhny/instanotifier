@@ -2,7 +2,7 @@ ipython>=7.5.0
 
 celery==4.3.1
 Django==2.2.10
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 coreapi==2.3.3
 
 psycopg2-binary==2.7.6
